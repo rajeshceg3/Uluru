@@ -306,16 +306,64 @@ function setChapter(i) {
 }
 stops.forEach((d, i) => d.addEventListener("click", () => setChapter(i)));
 
+/* ---------- dial gestures: swipe to change moment, arrows to step ---------- */
+const dial = document.getElementById("dial");
+let dialDownX = 0, dialDownY = 0, dialSwiping = false, dialGestureId = null, suppressDialClick = false;
+dial.addEventListener("pointerdown", (e) => {
+  dialDownX = e.clientX; dialDownY = e.clientY; dialSwiping = false; dialGestureId = e.pointerId;
+});
+dial.addEventListener("pointermove", (e) => {
+  if (dialGestureId !== e.pointerId) return;
+  const dx = e.clientX - dialDownX, dy = e.clientY - dialDownY;
+  if (!dialSwiping && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
+    dialSwiping = true;
+    try { dial.setPointerCapture(e.pointerId); } catch (_) {}
+  }
+});
+dial.addEventListener("pointerup", (e) => {
+  if (dialGestureId !== e.pointerId) return;
+  const dx = e.clientX - dialDownX;
+  dialGestureId = null;
+  if (dialSwiping) {
+    suppressDialClick = true;
+    if (dx <= -48) setChapter((chapter + 1) % CHAPTERS.length);
+    else if (dx >= 48) setChapter((chapter + CHAPTERS.length - 1) % CHAPTERS.length);
+  }
+  dialSwiping = false;
+});
+dial.addEventListener("pointercancel", () => { dialGestureId = null; dialSwiping = false; });
+dial.addEventListener("click", (e) => {
+  if (suppressDialClick) { e.preventDefault(); e.stopPropagation(); suppressDialClick = false; }
+}, true);
+dial.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") {
+    e.preventDefault();
+    setChapter((chapter + 1) % CHAPTERS.length);
+    stops[chapter] && stops[chapter].focus();
+  } else if (e.key === "ArrowLeft") {
+    e.preventDefault();
+    setChapter((chapter + CHAPTERS.length - 1) % CHAPTERS.length);
+    stops[chapter] && stops[chapter].focus();
+  }
+});
+
 /* ---------- pointer ---------- */
 let px = 0, py = 0, dragging = false, moved = 0, downX = 0, downY = 0;
-addEventListener("pointerdown", (e) => { dragging = true; moved = 0; downX = e.clientX; downY = e.clientY; wakeChrome(); });
+let dialPointer = null;
+addEventListener("pointerdown", (e) => {
+  dragging = true; moved = 0; downX = e.clientX; downY = e.clientY; wakeChrome();
+  dialPointer = e.target.closest && e.target.closest("#dial") ? e.pointerId : null;
+});
 addEventListener("pointermove", (e) => {
   if (dragging) { moved += Math.abs(e.clientX - downX) + Math.abs(e.clientY - downY); }
+  if (dialPointer === e.pointerId) return; // dial gestures never move the scene
   px = (e.clientX / innerWidth) * 2 - 1;
   py = (e.clientY / innerHeight) * 2 - 1;
 });
+addEventListener("pointercancel", (e) => { if (dialPointer === e.pointerId) dialPointer = null; });
 addEventListener("pointerup", (e) => {
   dragging = false;
+  if (dialPointer === e.pointerId) { dialPointer = null; return; } // dial taps never touch the scene
   if (moved >= 12) return;
   if (e.clientX > innerWidth - 220 && e.clientY > innerHeight - 200) return; /* dial zone stays tappable */
   const nx = (e.clientX / innerWidth) * 2 - 1;
