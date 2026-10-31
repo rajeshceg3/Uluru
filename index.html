@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Uluru</title>
+<meta name="description" content="One rock, one day - Uluru from dawn blush to burning sunset to a desert blooming with light.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M3 24 Q8 10 16 10 Q24 10 29 24 L29 28 L3 28 Z' fill='%23b3402a'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+<canvas id="rock" aria-label="Uluru through one day. Drag slowly to drift."></canvas>
+
+<div id="veil" aria-hidden="true">
+  <h1 class="wordmark">Uluru</h1>
+</div>
+
+<header id="masthead" class="chrome" aria-hidden="true">
+  <span class="wordmark-small">Uluru</span>
+</header>
+
+<p id="caption" class="chrome" role="status"></p>
+<p id="whisper" class="chrome"></p>
+
+<nav id="dial" class="chrome" aria-label="Moments of the day">
+  <svg id="dialarc" viewBox="0 0 180 180" aria-hidden="true">
+    <path d="M 27 134 Q 85 74 166 124 Q 176 131 182 148" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.45"/>
+  </svg>
+  <button class="stop" style="--a:150deg" data-scene="0" aria-label="Dawn blush"><i></i><span>Dawn</span></button>
+  <button class="stop" style="--a:90deg" data-scene="1" aria-label="Midday red"><i></i><span>Midday</span></button>
+  <button class="stop" style="--a:30deg" data-scene="2" aria-label="Sunset burn"><i></i><span>Sunset</span></button>
+  <button class="stop moon" style="--a:2deg" data-scene="3" aria-label="Field of light at night"><i></i><span>Night</span></button>
+</nav>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>
