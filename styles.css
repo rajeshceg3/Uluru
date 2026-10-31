@@ -46,3 +46,14 @@ body.night #dial { color: #b9a98c; }
   #caption { font-size: 1.8rem; right: 320px; bottom: 130px; }
   #whisper { font-size: 1.12rem; right: 300px; bottom: 90px; }
 }
+
+.stop:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
+@media (max-width: 759px) {
+  #caption { bottom: 142px; }
+  #whisper { bottom: 104px; }
+}

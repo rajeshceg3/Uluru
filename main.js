@@ -234,16 +234,16 @@ function embers(x, y) {
 const CHAPTERS = [
   { skyTop: "#ffe8d6", skyBot: "#f9c39a", fog: ["#f6bd97", 0.012], rock: "#a4553f", kata: "#c08a76", dunes: "#d99a6c", floor: "#c98a5f",
     sun: [-8, 4.6], sunC: "#ffcf9e", sunO: 1, haloO: 0.28, stars: 0, shimmer: 0, bulbs: 0, motes: ["#ffe0b8", 0.32], spini: "#c8a24f", night: false,
-    caption: "The rock wakes in blush.", whisper: "Six hundred million years old. Touch it awake." },
+    caption: "The rock wakes in blush.", whisper: "Six hundred million years old." },
   { skyTop: "#bfe0ee", skyBot: "#f0e2c0", fog: ["#ecd9b4", 0.010], rock: "#b3402a", kata: "#c96f4e", dunes: "#d98e52", floor: "#cf8350",
     sun: [0, 8.6], sunC: "#fff3d0", sunO: 1, haloO: 0.2, stars: 0, shimmer: 1, bulbs: 0, motes: ["#fff2d8", 0.3], spini: "#d4b25c", night: false,
-    caption: "Red centre, red heart.", whisper: "Tap the air - watch the heat shimmer." },
+    caption: "Red centre, red heart.", whisper: "" },
   { skyTop: "#8e4160", skyBot: "#ff8b4a", fog: ["#e0745a", 0.014], rock: "#e0562f", kata: "#a04a3a", dunes: "#b35c3a", floor: "#9c4f33",
     sun: [11.5, 1.1], sunC: "#ffb45e", sunO: 1, haloO: 0.4, stars: 0, shimmer: 0, bulbs: 0, motes: ["#ffc890", 0.36], spini: "#a8763a", night: false,
-    caption: "Every evening, it catches fire.", whisper: "Tap the sky - scatter the embers." },
+    caption: "Every evening, it catches fire.", whisper: "" },
   { skyTop: "#0b1026", skyBot: "#1c2340", fog: ["#141a33", 0.024], rock: "#221733", kata: "#1c1428", dunes: "#191428", floor: "#171225",
     sun: [9, 7.4], sunC: "#e8e4d8", sunO: 0.85, haloO: 0.12, stars: 1, shimmer: 0, bulbs: 1, motes: ["#c8c0b0", 0.16], spini: "#2c2440", night: true,
-    caption: "Fifty thousand lights bloom in the dark.", whisper: "Plant your own. Sacred Anangu land - seen, never climbed." },
+    caption: "Fifty thousand lights bloom in the dark.", whisper: "Sacred Anangu land - seen, never climbed." },
 ];
 let chapter = 0;
 const target = {
@@ -261,11 +261,29 @@ const caption = document.getElementById("caption");
 const whisper = document.getElementById("whisper");
 const chrome = [...document.querySelectorAll(".chrome")];
 const stops = [...document.querySelectorAll(".stop")];
-let idleTimer, whisperTimer;
+let idleTimer, whisperTimer, cueTimer, cueFirst;
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 function wakeChrome() {
   chrome.forEach((c) => c.classList.remove("idle"));
   clearTimeout(idleTimer);
   idleTimer = setTimeout(() => chrome.forEach((c) => c.classList.add("idle")), 4200);
+}
+function startCue(i) {
+  clearTimeout(cueFirst); clearInterval(cueTimer);
+  if (reduceMotion) return;
+  if (i === 0) { /* dawn: a soft bloom wakes on the rock face */
+    cueFirst = setTimeout(() => bloom(-8 + Math.random() * 16, -0.5 + Math.random() * 3), 3000);
+    cueTimer = setInterval(() => bloom(-8 + Math.random() * 16, -0.5 + Math.random() * 3), 7000);
+  } else if (i === 1) { /* midday: a heat ring rises through the shimmer */
+    cueFirst = setTimeout(() => heatRing(-7 + Math.random() * 14, -1.6 + Math.random() * 0.8), 3200);
+    cueTimer = setInterval(() => heatRing(-7 + Math.random() * 14, -1.6 + Math.random() * 0.8), 8000);
+  } else if (i === 2) { /* sunset: a small scatter of embers drifts up */
+    cueFirst = setTimeout(() => embers(-7 + Math.random() * 14, 1.5 + Math.random() * 3), 3000);
+    cueTimer = setInterval(() => embers(-7 + Math.random() * 14, 1.5 + Math.random() * 3), 7000);
+  } else if (i === 3) { /* night: a new light plants itself in the field */
+    cueFirst = setTimeout(() => plantBulb(-9 + Math.random() * 18, -2.6 - Math.random() * 3.4), 3400);
+    cueTimer = setInterval(() => plantBulb(-9 + Math.random() * 18, -2.6 - Math.random() * 3.4), 9000);
+  }
 }
 function setChapter(i) {
   if (i === chapter) return;
@@ -281,8 +299,9 @@ function setChapter(i) {
   stops.forEach((d, j) => d.classList.toggle("active", j === i));
   caption.classList.remove("show"); whisper.classList.remove("show");
   clearTimeout(whisperTimer);
+  startCue(i);
   setTimeout(() => { caption.textContent = c.caption; caption.classList.add("show"); }, 1100);
-  whisperTimer = setTimeout(() => { whisper.textContent = c.whisper; whisper.classList.add("show"); }, 3200);
+  if (c.whisper)whisperTimer = setTimeout(() => { whisper.textContent = c.whisper; whisper.classList.add("show"); }, 3200);
   wakeChrome();
 }
 stops.forEach((d, i) => d.addEventListener("click", () => setChapter(i)));
@@ -334,9 +353,10 @@ let camX = 0, camY = 0;
 function tick() {
   const dt = Math.min(clock.getDelta(), 0.05);
   const t = clock.elapsedTime;
+  const tA = reduceMotion ? 0 : t;
 
-  camX = lerp(camX, px * 1.1, 1 - Math.exp(-3.2 * dt));
-  camY = lerp(camY, -py * 0.5, 1 - Math.exp(-3.2 * dt));
+  camX = lerp(camX, reduceMotion ? 0 : px * 1.1, 1 - Math.exp(-3.2 * dt));
+  camY = lerp(camY, reduceMotion ? 0 : -py * 0.5, 1 - Math.exp(-3.2 * dt));
   camera.position.x = camX; camera.position.y = camY + 0.4;
   camera.lookAt(camX * 0.4, camY * 0.3 + 0.4, -20);
 
@@ -354,27 +374,29 @@ function tick() {
   lerpColor(moteMat.color, target.motes, k);
   lerpColor(spiniMat.color, target.spini, k);
   sun.position.x = lerp(sun.position.x, target.sunX, k);
-  sun.position.y = lerp(sun.position.y, target.sunY + Math.sin(t * 0.8) * 0.12, k);
+  sun.position.y = lerp(sun.position.y, target.sunY + Math.sin(tA * 0.8) * 0.12, k);
   halo.position.copy(sun.position);
   sunMat.opacity = lerp(sunMat.opacity, target.sunO, k);
-  haloMat.opacity = lerp(haloMat.opacity, target.haloO * (0.85 + Math.sin(t * 1.7) * 0.15), k);
+  haloMat.opacity = lerp(haloMat.opacity, target.haloO * (0.85 + Math.sin(tA * 1.7) * 0.15), k);
   starMat.opacity = lerp(starMat.opacity, target.stars, k);
   moteMat.opacity = lerp(moteMat.opacity, target.motesO, k);
-  bulbMat.opacity = lerp(bulbMat.opacity, target.bulbs * (0.75 + Math.sin(t * 2.1) * 0.25), k);
+  bulbMat.opacity = lerp(bulbMat.opacity, target.bulbs * (0.75 + Math.sin(tA * 2.1) * 0.25), k);
 
-  const shimTarget = target.shimmer * (0.10 + Math.sin(t * 3.4) * 0.05);
+  const shimTarget = target.shimmer * (0.10 + Math.sin(tA * 3.4) * 0.05);
   shimMat.opacity = lerp(shimMat.opacity, shimTarget, k);
-  for (const s of shimmers) { s.m.position.y += Math.sin(t * 2.2 + s.phase) * 0.0015; s.m.scale.x = 1 + Math.sin(t * 1.9 + s.phase) * 0.05; }
-  for (const s of spiniList) s.g.rotation.z = Math.sin(t * 0.7 + s.phase) * 0.04;
-  for (const b of planted) b.m.material.opacity = 0.6 + Math.sin(t * 2.4 + b.phase) * 0.35;
+  for (const s of shimmers) { s.m.position.y += Math.sin(tA * 2.2 + s.phase) * 0.0015; s.m.scale.x = 1 + Math.sin(tA * 1.9 + s.phase) * 0.05; }
+  for (const s of spiniList) s.g.rotation.z = Math.sin(tA * 0.7 + s.phase) * 0.04;
+  for (const b of planted) b.m.material.opacity = 0.6 + Math.sin(tA * 2.4 + b.phase) * 0.35;
 
-  const pos = moteGeo.attributes.position;
-  for (let i = 0; i < pos.count; i++) {
-    let x = pos.getX(i) + dt * (0.3 + (i % 5) * 0.07);
-    if (x > 46) x = -46;
-    pos.setX(i, x);
+  if (!reduceMotion) {
+    const pos = moteGeo.attributes.position;
+    for (let i = 0; i < pos.count; i++) {
+      let x = pos.getX(i) + dt * (0.3 + (i % 5) * 0.07);
+      if (x > 46) x = -46;
+      pos.setX(i, x);
+    }
+    pos.needsUpdate = true;
   }
-  pos.needsUpdate = true;
 
   for (let i = fx.length - 1; i >= 0; i--) {
     const f = fx[i];
@@ -413,4 +435,5 @@ setTimeout(() => {
   whisper.textContent = CHAPTERS[0].whisper;
   whisperTimer = setTimeout(() => whisper.classList.add("show"), 3000);
   wakeChrome();
+  startCue(0);
 }, 2100);
