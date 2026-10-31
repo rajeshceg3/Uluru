@@ -52,3 +52,8 @@ body.night #dial { color: #b9a98c; }
   outline-offset: 2px;
   border-radius: 12px;
 }
+
+@media (max-width: 759px) {
+  #caption { bottom: 142px; }
+  #whisper { bottom: 104px; }
+}
