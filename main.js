@@ -268,6 +268,23 @@ function wakeChrome() {
   clearTimeout(idleTimer);
   idleTimer = setTimeout(() => chrome.forEach((c) => c.classList.add("idle")), 4200);
 }
+function startCue(i) {
+  clearTimeout(cueFirst); clearInterval(cueTimer);
+  if (reduceMotion) return;
+  if (i === 0) { /* dawn: a soft bloom wakes on the rock face */
+    cueFirst = setTimeout(() => bloom(-8 + Math.random() * 16, -0.5 + Math.random() * 3), 3000);
+    cueTimer = setInterval(() => bloom(-8 + Math.random() * 16, -0.5 + Math.random() * 3), 7000);
+  } else if (i === 1) { /* midday: a heat ring rises through the shimmer */
+    cueFirst = setTimeout(() => heatRing(-7 + Math.random() * 14, -1.6 + Math.random() * 0.8), 3200);
+    cueTimer = setInterval(() => heatRing(-7 + Math.random() * 14, -1.6 + Math.random() * 0.8), 8000);
+  } else if (i === 2) { /* sunset: a small scatter of embers drifts up */
+    cueFirst = setTimeout(() => embers(-7 + Math.random() * 14, 1.5 + Math.random() * 3), 3000);
+    cueTimer = setInterval(() => embers(-7 + Math.random() * 14, 1.5 + Math.random() * 3), 7000);
+  } else if (i === 3) { /* night: a new light plants itself in the field */
+    cueFirst = setTimeout(() => plantBulb(-9 + Math.random() * 18, -2.6 - Math.random() * 3.4), 3400);
+    cueTimer = setInterval(() => plantBulb(-9 + Math.random() * 18, -2.6 - Math.random() * 3.4), 9000);
+  }
+}
 function setChapter(i) {
   if (i === chapter) return;
   chapter = i;
@@ -282,22 +299,7 @@ function setChapter(i) {
   stops.forEach((d, j) => d.classList.toggle("active", j === i));
   caption.classList.remove("show"); whisper.classList.remove("show");
   clearTimeout(whisperTimer);
-  clearTimeout(cueFirst); clearInterval(cueTimer);
-  if (!reduceMotion) {
-    if (i === 0) { /* dawn: a soft bloom wakes on the rock face */
-      cueFirst = setTimeout(() => bloom(-8 + Math.random() * 16, -0.5 + Math.random() * 3), 3000);
-      cueTimer = setInterval(() => bloom(-8 + Math.random() * 16, -0.5 + Math.random() * 3), 7000);
-    } else if (i === 1) { /* midday: a heat ring rises through the shimmer */
-      cueFirst = setTimeout(() => heatRing(-7 + Math.random() * 14, -1.6 + Math.random() * 0.8), 3200);
-      cueTimer = setInterval(() => heatRing(-7 + Math.random() * 14, -1.6 + Math.random() * 0.8), 8000);
-    } else if (i === 2) { /* sunset: a small scatter of embers drifts up */
-      cueFirst = setTimeout(() => embers(-7 + Math.random() * 14, 1.5 + Math.random() * 3), 3000);
-      cueTimer = setInterval(() => embers(-7 + Math.random() * 14, 1.5 + Math.random() * 3), 7000);
-    } else if (i === 3) { /* night: a new light plants itself in the field */
-      cueFirst = setTimeout(() => plantBulb(-9 + Math.random() * 18, -2.6 - Math.random() * 3.4), 3400);
-      cueTimer = setInterval(() => plantBulb(-9 + Math.random() * 18, -2.6 - Math.random() * 3.4), 9000);
-    }
-  }
+  startCue(i);
   setTimeout(() => { caption.textContent = c.caption; caption.classList.add("show"); }, 1100);
   if (c.whisper)whisperTimer = setTimeout(() => { whisper.textContent = c.whisper; whisper.classList.add("show"); }, 3200);
   wakeChrome();
@@ -433,4 +435,5 @@ setTimeout(() => {
   whisper.textContent = CHAPTERS[0].whisper;
   whisperTimer = setTimeout(() => whisper.classList.add("show"), 3000);
   wakeChrome();
+  startCue(0);
 }, 2100);
