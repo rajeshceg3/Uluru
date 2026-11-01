@@ -22,11 +22,14 @@ canvas#rock { position: fixed; inset: 0; width: 100%; height: 100%; display: blo
 #whisper.show { opacity: 0.85; transform: none; }
 body.night #caption { color: #e9ddc8; }
 body.night #whisper { color: #cbbfa8; }
-body.night .wordmark-small { color: #d8cbaf; }
+body.night .wordmark-small { color: #e9ddc8; opacity: 1; }
+body.night .chrome.idle { opacity: 0.38; }
 
 /* the sun dial - a corner arc tracing the sun's journey, not a bottom sheet */
 #dial { right: 6px; bottom: 6px; width: 210px; height: 190px; color: #8a3b22; touch-action: none; }
-body.night #dial { color: #b9a98c; }
+body.night #dial { color: #e6d9bd; }
+body.night .stop i { opacity: 0.6; }
+body.night .stop.active i { opacity: 1; }
 #dialarc { position: absolute; inset: 0; width: 100%; height: 100%; }
 .stop { position: absolute; width: 48px; height: 48px; border: 0; background: none; cursor: pointer;
   display: grid; place-items: center; }
@@ -56,4 +59,19 @@ body.night #dial { color: #b9a98c; }
 @media (max-width: 759px) {
   #caption { bottom: 142px; }
   #whisper { bottom: 104px; }
+}
+
+/* the way back - appears only after you have looked away */
+#home { right: 20px; bottom: 208px; font: inherit; font-size: 0.85rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #8a3b22; background: rgba(253, 244, 228, 0.72);
+  border: 1px solid rgba(138, 59, 34, 0.35); border-radius: 999px; padding: 8px 14px; cursor: pointer;
+  opacity: 0; pointer-events: none; transform: translateY(6px);
+  transition: opacity 0.6s ease, transform 0.6s ease; }
+#home.show { opacity: 1; pointer-events: auto; transform: none; }
+#home.chrome.idle, #home.idle.show { opacity: 0.14; pointer-events: none; }
+body.night #home { color: #e6d9bd; background: rgba(10, 12, 22, 0.55); border-color: rgba(230, 217, 189, 0.4); }
+body.night #home.chrome.idle, body.night #home.idle.show { opacity: 0.38; }
+#home:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+@media (max-width: 759px) {
+  #home { bottom: 216px; }
 }

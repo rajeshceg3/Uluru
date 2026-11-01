@@ -359,8 +359,16 @@ const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 function wakeChrome() {
   chrome.forEach((c) => c.classList.remove("idle"));
   clearTimeout(idleTimer);
-  idleTimer = setTimeout(() => chrome.forEach((c) => c.classList.add("idle")), 4200);
+  idleTimer = setTimeout(() => {
+    /* never fade chrome out from under someone using it */
+    if (chrome.some((c) => c.contains(document.activeElement))) { wakeChrome(); return; }
+    chrome.forEach((c) => c.classList.add("idle"));
+  }, 4200);
 }
+chrome.forEach((c) => {
+  c.addEventListener("focusin", wakeChrome);
+  c.addEventListener("focusout", wakeChrome);
+});
 /* bearings are relative to the viewer's current gaze, so cues happen where you look */
 function gazePoint(dist, spread, yMin, yMax) {
   const a = yaw + (Math.random() - 0.5) * spread;
@@ -414,6 +422,20 @@ function setChapter(i) {
   wakeChrome();
 }
 stops.forEach((d, i) => d.addEventListener("click", () => setChapter(i)));
+
+/* ---------- home: a deliberate way back, never a forced one ---------- */
+const homeBtn = document.getElementById("home");
+let returningHome = false, homeWasShown = false;
+homeBtn.addEventListener("click", () => {
+  yawVel = 0; pitchVel = 0;
+  lastTouch = performance.now();
+  if (reduceMotion) {
+    yaw = Math.round(yaw / (Math.PI * 2)) * (Math.PI * 2); pitch = 0;
+  } else {
+    returningHome = true;
+  }
+  wakeChrome();
+});
 
 /* ---------- dial gestures: swipe to change moment, arrows to step ---------- */
 const dial = document.getElementById("dial");
@@ -473,6 +495,7 @@ function tapRay(e) {
   return raycaster;
 }
 addEventListener("pointerdown", (e) => {
+  returningHome = false;
   dragging = true; moved = 0;
   downX = lastX = e.clientX; downY = lastY = e.clientY;
   yawVel = 0; pitchVel = 0;
@@ -536,15 +559,28 @@ function tick() {
   const t = clock.elapsedTime;
   const tA = reduceMotion ? 0 : t;
 
-  /* orbit: inertia after release, a quiet pull home after long stillness */
+  /* orbit: inertia after release; the view only returns home when asked */
   if (!dragging) {
     yaw += yawVel * dt; pitch = Math.max(PITCH_MIN, Math.min(PITCH_MAX, pitch + pitchVel * dt));
     const damp = Math.exp(-2.4 * dt);
     yawVel *= damp; pitchVel *= damp;
-    if (!reduceMotion && performance.now() - lastTouch > 14000 && lastTouch > 0) {
+    if (returningHome) {
       const home = Math.round(yaw / (Math.PI * 2)) * (Math.PI * 2);
-      yaw = lerp(yaw, home, 1 - Math.exp(-0.5 * dt));
-      pitch = lerp(pitch, 0, 1 - Math.exp(-0.5 * dt));
+      const kh = 1 - Math.exp(-2.2 * dt);
+      yaw = lerp(yaw, home, kh);
+      pitch = lerp(pitch, 0, kh);
+      if (Math.abs(yaw - home) < 0.003 && Math.abs(pitch) < 0.003) { yaw = home; pitch = 0; returningHome = false; }
+    }
+  }
+  /* the home control appears only once you have actually looked away */
+  {
+    const twoPi = Math.PI * 2;
+    const drifted = Math.abs(yaw - Math.round(yaw / twoPi) * twoPi) > 0.35 || Math.abs(pitch) > 0.12;
+    if (drifted !== homeWasShown) {
+      homeWasShown = drifted;
+      homeBtn.classList.toggle("show", drifted);
+      homeBtn.setAttribute("aria-hidden", drifted ? "false" : "true");
+      homeBtn.tabIndex = drifted ? 0 : -1;
     }
   }
   const sway = reduceMotion ? 0 : Math.sin(tA * 0.07) * 0.006;
