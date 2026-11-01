@@ -8,22 +8,26 @@ canvas#rock { position: fixed; inset: 0; width: 100%; height: 100%; display: blo
 #veil.gone { opacity: 0; visibility: hidden; }
 .wordmark { font-weight: 500; font-size: clamp(2.4rem, 9vw, 4.6rem); letter-spacing: 0.22em; color: #7c2f1d;
   text-transform: uppercase; }
-.wordmark-small { font-size: 0.82rem; letter-spacing: 0.24em; text-transform: uppercase; color: #7c2f1d; opacity: 0.85; }
+.wordmark-small { font-size: 0.82rem; letter-spacing: 0.24em; text-transform: uppercase; color: #7c2f1d;
+  background: rgba(253, 244, 228, 0.85); padding: 4px 12px; border-radius: 999px; }
+body.night .wordmark-small { background: rgba(10, 12, 22, 0.55); }
 
 .chrome { position: fixed; z-index: 20; transition: opacity 0.9s ease; }
 .chrome.idle { opacity: 0.14; pointer-events: none; }
 #masthead { top: max(18px, env(safe-area-inset-top)); left: 22px; }
 
-#caption { left: 22px; right: 150px; bottom: 116px; font-style: italic; font-size: 1.45rem; line-height: 1.25;
-  color: #5d2413; opacity: 0; transform: translateY(10px); transition: opacity 1.1s ease, transform 1.1s ease; }
+#caption { left: 22px; right: auto; max-width: min(70vw, 620px); bottom: 116px; font-style: italic; font-size: 1.45rem; line-height: 1.25;
+  color: #5d2413; background: rgba(253, 244, 228, 0.66); padding: 10px 16px; border-radius: 12px;
+  opacity: 0; transform: translateY(10px); transition: opacity 1.1s ease, transform 1.1s ease; }
 #caption.show { opacity: 1; transform: none; }
-#whisper { left: 22px; right: 120px; bottom: 78px; font-size: 1rem; color: #6e3018; opacity: 0;
-  transform: translateY(8px); transition: opacity 1.1s ease, transform 1.1s ease; }
-#whisper.show { opacity: 0.85; transform: none; }
-body.night #caption { color: #e9ddc8; }
-body.night #whisper { color: #cbbfa8; }
+#whisper { left: 22px; right: auto; max-width: min(70vw, 540px); bottom: 78px; font-size: 1rem; color: #6e3018;
+  background: rgba(253, 244, 228, 0.56); padding: 7px 14px; border-radius: 10px;
+  opacity: 0; transform: translateY(8px); transition: opacity 1.1s ease, transform 1.1s ease; }
+#whisper.show { opacity: 1; transform: none; }
+body.night #caption { color: #e9ddc8; background: rgba(10, 12, 22, 0.52); }
+body.night #whisper { color: #cbbfa8; background: rgba(10, 12, 22, 0.46); }
 body.night .wordmark-small { color: #e9ddc8; opacity: 1; }
-body.night .chrome.idle { opacity: 0.38; }
+body.night .chrome.idle, body.sunset .chrome.idle { opacity: 0.38; }
 
 /* the sun dial - a corner arc tracing the sun's journey, not a bottom sheet */
 #dial { right: 6px; bottom: 6px; width: 210px; height: 190px; color: #8a3b22; touch-action: none; }
@@ -38,16 +42,18 @@ body.night .stop.active i { opacity: 1; }
 .stop.moon i { border-radius: 50% 50% 50% 4px; }
 .stop.active i { opacity: 1; transform: scale(1.7); box-shadow: 0 0 14px 3px rgba(255, 190, 120, 0.6); }
 .stop span { position: absolute; bottom: calc(100% - 8px); left: 50%; transform: translateX(-50%) translateY(4px);
-  font-size: 0.85rem; letter-spacing: 0.06em; color: inherit; opacity: 0; transition: opacity 0.45s, transform 0.45s;
+  font-size: 0.85rem; letter-spacing: 0.06em; color: inherit; background: rgba(253, 244, 228, 0.85);
+  padding: 2px 9px; border-radius: 999px; opacity: 0; transition: opacity 0.45s, transform 0.45s;
   white-space: nowrap; pointer-events: none; }
+body.night .stop span { background: rgba(10, 12, 22, 0.55); }
 .stop.active span { opacity: 0.9; transform: translateX(-50%) translateY(0); }
 .stop[data-scene="0"] { left: 3px;   top: 110px; }
 .stop[data-scene="1"] { left: 61px;  top: 69px; }
 .stop[data-scene="2"] { left: 142px; top: 100px; }
 .stop[data-scene="3"] { left: 158px; top: 126px; }
 @media (min-width: 760px) {
-  #caption { font-size: 1.8rem; right: 320px; bottom: 130px; }
-  #whisper { font-size: 1.12rem; right: 300px; bottom: 90px; }
+  #caption { font-size: 1.8rem; bottom: 130px; }
+  #whisper { font-size: 1.12rem; bottom: 90px; }
 }
 
 .stop:focus-visible {
@@ -63,14 +69,15 @@ body.night .stop.active i { opacity: 1; }
 
 /* the way back - appears only after you have looked away */
 #home { right: 20px; bottom: 208px; font: inherit; font-size: 0.85rem; letter-spacing: 0.08em;
-  text-transform: uppercase; color: #8a3b22; background: rgba(253, 244, 228, 0.72);
+  text-transform: uppercase; color: #8a3b22; background: rgba(253, 244, 228, 0.85);
   border: 1px solid rgba(138, 59, 34, 0.35); border-radius: 999px; padding: 8px 14px; cursor: pointer;
   opacity: 0; pointer-events: none; transform: translateY(6px);
   transition: opacity 0.6s ease, transform 0.6s ease; }
 #home.show { opacity: 1; pointer-events: auto; transform: none; }
-#home.chrome.idle, #home.idle.show { opacity: 0.14; pointer-events: none; }
+/* the way back must never fade while you are lost: home ignores the idle dim */
+#home.chrome.idle, #home.idle.show { opacity: 1; pointer-events: auto; }
 body.night #home { color: #e6d9bd; background: rgba(10, 12, 22, 0.55); border-color: rgba(230, 217, 189, 0.4); }
-body.night #home.chrome.idle, body.night #home.idle.show { opacity: 0.38; }
+
 #home:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 @media (max-width: 759px) {
   #home { bottom: 216px; }

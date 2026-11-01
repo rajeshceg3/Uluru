@@ -332,7 +332,7 @@ const CHAPTERS = [
     sun: [0, 12.6], sunC: "#fff3d0", sunO: 1, haloO: 0.2, stars: 0, shimmer: 1, bulbs: 0, motes: ["#fff2d8", 0.3], spini: "#d4b25c", night: false,
     caption: "Red centre, red heart.", whisper: "" },
   { skyTop: "#8e4160", skyBot: "#ff8b4a", fog: ["#e0745a", 0.014], rock: "#e0562f", kata: "#a04a3a", dunes: "#b35c3a", floor: "#9c4f33",
-    sun: [11.5, 4.6], sunC: "#ffb45e", sunO: 1, haloO: 0.4, stars: 0, shimmer: 0, bulbs: 0, motes: ["#ffc890", 0.36], spini: "#a8763a", night: false,
+    sun: [11.5, 4.6], sunC: "#ffb45e", sunO: 1, haloO: 0.4, stars: 0, shimmer: 0, bulbs: 0, motes: ["#ffc890", 0.36], spini: "#a8763a", night: false, sunset: true,
     caption: "Every evening, it catches fire.", whisper: "" },
   { skyTop: "#0b1026", skyBot: "#1c2340", fog: ["#141a33", 0.024], rock: "#221733", kata: "#1c1428", dunes: "#191428", floor: "#171225",
     sun: [9, 9.4], sunC: "#e8e4d8", sunO: 0.85, haloO: 0.12, stars: 1, shimmer: 0, bulbs: 1, motes: ["#c8c0b0", 0.16], spini: "#2c2440", night: true,
