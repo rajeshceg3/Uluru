@@ -133,31 +133,16 @@ const kata = new THREE.Group();
 }
 scene.add(kata);
 
-/* ---------- a long dune ridge mid-plain, east-south-east ---------- */
-function ridgeShape(width, base, amp, freq, phase) {
-  const s = new THREE.Shape();
-  s.moveTo(-width / 2, -30);
-  for (let x = -width / 2; x <= width / 2; x += 2) {
-    s.lineTo(x, base + Math.sin(x * freq + phase) * amp + Math.sin(x * freq * 2.3 + phase * 1.7) * amp * 0.4);
-  }
-  s.lineTo(width / 2, -30);
-  s.closePath();
-  return s;
-}
+/* ---------- mid-plain dune swales: concentric rings, true from every bearing ---------- */
 const ridgeMat = new THREE.MeshBasicMaterial({ color: "#d99a6c", side: THREE.DoubleSide });
-const ridges = new THREE.Group();
+const swales = new THREE.Group();
 {
-  const r1 = new THREE.Mesh(new THREE.ExtrudeGeometry(ridgeShape(60, -4.9, 0.5, 0.08, 1.0), { depth: 5, bevelEnabled: false }), ridgeMat);
-  r1.position.set(34, 0, -8); r1.rotation.y = 0.5;
-  const r2 = new THREE.Mesh(new THREE.ExtrudeGeometry(ridgeShape(46, -5.1, 0.45, 0.09, 3.2), { depth: 4, bevelEnabled: false }), ridgeMat);
-  r2.position.set(-30, 0, 16); r2.rotation.y = -0.7;
-  const r3 = new THREE.Mesh(new THREE.ExtrudeGeometry(ridgeShape(52, -5.0, 0.5, 0.07, 5.0), { depth: 5, bevelEnabled: false }), ridgeMat);
-  r3.position.set(8, 0, 34); r3.rotation.y = 2.6;
-  const r0 = new THREE.Mesh(new THREE.ExtrudeGeometry(ridgeShape(100, -4.6, 0.5, 0.05, 1.0), { depth: 6, bevelEnabled: false }), ridgeMat);
-  r0.position.set(0, 0, -19);
-  ridges.add(r1, r2, r3, r0);
+  const r0 = new THREE.Mesh(duneRing(28, 33, -5.2, 0.5, 5, 1.0), ridgeMat);   // passes at the rock's foot
+  const r1 = new THREE.Mesh(duneRing(38, 44, -4.9, 0.65, 6, 3.2), ridgeMat);
+  const r2 = new THREE.Mesh(duneRing(47, 53, -4.7, 0.6, 8, 5.0), ridgeMat);
+  swales.add(r0, r1, r2);
 }
-scene.add(ridges);
+scene.add(swales);
 
 /* ---------- spinifex tufts: crossed blades, scattered on all sides ---------- */
 const spiniMat = new THREE.MeshBasicMaterial({ color: "#c8a24f", transparent: true, opacity: 0.85, side: THREE.DoubleSide });
