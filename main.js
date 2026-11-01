@@ -66,13 +66,13 @@ scene.add(halo);
 /* ---------- the monolith: extruded, so it has a back and sides ---------- */
 function rockShape() {
   const s = new THREE.Shape();
-  s.moveTo(-34, -30);
-  s.lineTo(-34, -4.2);
-  s.bezierCurveTo(-33, -1.5, -29, 0.6, -24, 1.5);
+  s.moveTo(-33, -30);
+  s.bezierCurveTo(-34.6, -18, -34.6, -8, -32.5, -4.6);   /* the ends slide underground, no shelf */
+  s.bezierCurveTo(-31.5, -1.8, -28, 0.6, -24, 1.5);
   s.bezierCurveTo(-18, 2.6, -10, 3.4, -2, 3.5);
   s.bezierCurveTo(6, 3.6, 14, 3.0, 20, 2.0);
-  s.bezierCurveTo(26, 1.0, 31, -0.8, 33, -3.0);
-  s.lineTo(34, -30);
+  s.bezierCurveTo(26, 1.0, 30, -0.8, 32.5, -3.2);
+  s.bezierCurveTo(34.6, -8, 34.6, -18, 33, -30);
   s.closePath();
   return s;
 }
@@ -92,12 +92,24 @@ floor.position.y = -6.2;
 scene.add(floor);
 
 /* ---------- dune horizon: a wavy ring, no void at any bearing ---------- */
-function duneRing(rIn, rOut, base, amp, freq, phase, segs = 128) {
+function rectDist(x, z, x0, x1, z0, z1) {
+  const dx = Math.max(x0 - x, 0, x - x1);
+  const dz = Math.max(z0 - z, 0, z - z1);
+  return Math.hypot(dx, dz);
+}
+function duneRing(rIn, rOut, base, amp, freq, phase, segs = 128, avoid = null) {
   const pos = [];
   const idx = [];
   for (let i = 0; i <= segs; i++) {
     const a = (i / segs) * Math.PI * 2;
-    const h = base + Math.sin(a * freq + phase) * amp + Math.sin(a * freq * 2.3 + phase * 1.7) * amp * 0.4;
+    let h = base + Math.sin(a * freq + phase) * amp + Math.sin(a * freq * 2.3 + phase * 1.7) * amp * 0.4;
+    if (avoid) {
+      /* the swale keeps its distance from the monolith: submerge near its footprint */
+      const dMid = rectDist(Math.cos(a) * (rIn + rOut) / 2, Math.sin(a) * (rIn + rOut) / 2, ...avoid);
+      const t = Math.max(0, Math.min(1, (dMid - 5) / 8));
+      const m = t * t * (3 - 2 * t);
+      h = -30 + (h + 30) * m;
+    }
     pos.push(Math.cos(a) * rIn, -30, Math.sin(a) * rIn);
     pos.push(Math.cos(a) * rIn, h, Math.sin(a) * rIn);
     pos.push(Math.cos(a) * rOut, h * 0.92, Math.sin(a) * rOut);
@@ -137,7 +149,7 @@ scene.add(kata);
 const ridgeMat = new THREE.MeshBasicMaterial({ color: "#d99a6c", side: THREE.DoubleSide });
 const swales = new THREE.Group();
 {
-  const r0 = new THREE.Mesh(duneRing(28, 33, -5.2, 0.5, 5, 1.0), ridgeMat);   // passes at the rock's foot
+  const r0 = new THREE.Mesh(duneRing(28, 33, -5.2, 0.5, 5, 1.0, 128, [-35.5, 35.5, -42.5, -25.5]), ridgeMat);   // passes at the rock's foot, but never butts into it
   const r1 = new THREE.Mesh(duneRing(38, 44, -4.9, 0.65, 6, 3.2), ridgeMat);
   const r2 = new THREE.Mesh(duneRing(47, 53, -4.7, 0.6, 8, 5.0), ridgeMat);
   swales.add(r0, r1, r2);
