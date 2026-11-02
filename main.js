@@ -477,6 +477,7 @@ tick();
 /* ---------- veil ---------- */
 setTimeout(() => {
   veil.classList.add("gone");
+  document.body.classList.add("settled");
   stops[0].classList.add("active");
   caption.textContent = CHAPTERS[0].caption;
   setTimeout(() => caption.classList.add("show"), 900);
