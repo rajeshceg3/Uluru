@@ -58,14 +58,27 @@ sun.position.set(-8, 4.6, -38);
 scene.add(sun);
 /* radial falloff for the halo: a plain disc reads as a sticker ring around the sun/moon */
 function haloTexture() {
-  const c = document.createElement("canvas"); c.width = c.height = 64;
-  const g = c.getContext("2d");
-  const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-  grad.addColorStop(0, "rgba(255,255,255,1)");
-  grad.addColorStop(0.55, "rgba(255,255,255,0.38)");
-  grad.addColorStop(1, "rgba(255,255,255,0)");
-  g.fillStyle = grad; g.fillRect(0, 0, 64, 64);
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  /* Byte-explicit falloff: a canvas-gradient alphaMap (especially with an sRGB
+     tag) renders as stepped concentric zones with a hard outer rim on hardware
+     GL. DataTexture with linear filtering keeps the glow smooth and the value
+     reaches 0 well inside the rim, so no edge texel can read as a boundary. */
+  const N = 64, data = new Uint8Array(N * N * 4);
+  for (let y = 0; y < N; y++) {
+    for (let x = 0; x < N; x++) {
+      const dx = (x + 0.5) / N - 0.5, dy = (y + 0.5) / N - 0.5;
+      const r = Math.sqrt(dx * dx + dy * dy) * 2; /* 0 center .. 1 rim */
+      let v = 0;
+      if (r < 0.85) {
+        const t = r / 0.85;
+        v = Math.round(255 * Math.pow(Math.cos(t * Math.PI * 0.5), 1.6));
+      }
+      const i = (y * N + x) * 4;
+      data[i] = data[i + 1] = data[i + 2] = v; data[i + 3] = 255;
+    }
+  }
+  const t = new THREE.DataTexture(data, N, N, THREE.RGBAFormat);
+  t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearFilter;
+  t.generateMipmaps = false; t.needsUpdate = true;
   return t;
 }
 const haloMat = new THREE.MeshBasicMaterial({ color: "#ffcf9e", transparent: true, opacity: 0.28, alphaMap: haloTexture() });
