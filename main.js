@@ -56,7 +56,19 @@ const sunMat = new THREE.MeshBasicMaterial({ color: "#ffcf9e", transparent: true
 const sun = new THREE.Mesh(new THREE.CircleGeometry(1.5, 32), sunMat);
 sun.position.set(-8, 4.6, -38);
 scene.add(sun);
-const haloMat = new THREE.MeshBasicMaterial({ color: "#ffcf9e", transparent: true, opacity: 0.28 });
+/* radial falloff for the halo: a plain disc reads as a sticker ring around the sun/moon */
+function haloTexture() {
+  const c = document.createElement("canvas"); c.width = c.height = 64;
+  const g = c.getContext("2d");
+  const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  grad.addColorStop(0, "rgba(255,255,255,1)");
+  grad.addColorStop(0.55, "rgba(255,255,255,0.38)");
+  grad.addColorStop(1, "rgba(255,255,255,0)");
+  g.fillStyle = grad; g.fillRect(0, 0, 64, 64);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+const haloMat = new THREE.MeshBasicMaterial({ color: "#ffcf9e", transparent: true, opacity: 0.28, alphaMap: haloTexture() });
 const halo = new THREE.Mesh(new THREE.CircleGeometry(3.6, 32), haloMat);
 halo.position.copy(sun.position);
 scene.add(halo);
