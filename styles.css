@@ -12,7 +12,7 @@ canvas#rock { position: fixed; inset: 0; width: 100%; height: 100%; display: blo
 
 .chrome { position: fixed; z-index: 20; transition: opacity 0.9s ease; }
 .chrome.idle { opacity: 0.14; pointer-events: none; }
-#dial.idle { opacity: 0.65; } /* navigation stays discoverable at rest; full contrast returns on wake */
+#dial.idle { opacity: 1; pointer-events: auto; } /* navigation never recedes: full awake contrast and direct taps at rest */
 #masthead { top: max(18px, env(safe-area-inset-top)); left: 22px; }
 
 /* foreground haze: desert light pooling at the near corner so the ink has a
