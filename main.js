@@ -72,6 +72,7 @@ const haloMat = new THREE.MeshBasicMaterial({ color: "#ffcf9e", transparent: tru
 const halo = new THREE.Mesh(new THREE.CircleGeometry(3.6, 32), haloMat);
 halo.position.copy(sun.position);
 scene.add(halo);
+window.__scene = scene; /* TEMP instrumentation: halo rim forensics on preview */
 
 /* ---------- helpers ---------- */
 function layer(shape, color, z, opacity = 1) {
