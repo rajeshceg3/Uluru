@@ -56,7 +56,19 @@ const sunMat = new THREE.MeshBasicMaterial({ color: "#ffcf9e", transparent: true
 const sun = new THREE.Mesh(new THREE.CircleGeometry(1.5, 32), sunMat);
 sun.position.set(-8, 4.6, -38);
 scene.add(sun);
-const haloMat = new THREE.MeshBasicMaterial({ color: "#ffcf9e", transparent: true, opacity: 0.28 });
+/* radial falloff for the halo: a plain disc reads as a sticker ring around the sun/moon */
+function haloTexture() {
+  const c = document.createElement("canvas"); c.width = c.height = 64;
+  const g = c.getContext("2d");
+  const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  grad.addColorStop(0, "rgba(255,255,255,1)");
+  grad.addColorStop(0.55, "rgba(255,255,255,0.38)");
+  grad.addColorStop(1, "rgba(255,255,255,0)");
+  g.fillStyle = grad; g.fillRect(0, 0, 64, 64);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+const haloMat = new THREE.MeshBasicMaterial({ color: "#ffcf9e", transparent: true, opacity: 0.28, alphaMap: haloTexture() });
 const halo = new THREE.Mesh(new THREE.CircleGeometry(3.6, 32), haloMat);
 halo.position.copy(sun.position);
 scene.add(halo);
@@ -239,7 +251,7 @@ const CHAPTERS = [
     sun: [0, 8.6], sunC: "#fff3d0", sunO: 1, haloO: 0.2, stars: 0, shimmer: 1, bulbs: 0, motes: ["#fff2d8", 0.3], spini: "#d4b25c", night: false,
     caption: "Red centre, red heart.", whisper: "" },
   { skyTop: "#8e4160", skyBot: "#ff8b4a", fog: ["#e0745a", 0.014], rock: "#e0562f", kata: "#a04a3a", dunes: "#b35c3a", floor: "#9c4f33",
-    sun: [11.5, 1.1], sunC: "#ffb45e", sunO: 1, haloO: 0.4, stars: 0, shimmer: 0, bulbs: 0, motes: ["#ffc890", 0.36], spini: "#a8763a", night: false,
+    sun: [11.5, 1.1], sunC: "#ffb45e", sunO: 1, haloO: 0.4, stars: 0, shimmer: 0, bulbs: 0, motes: ["#ffc890", 0.36], spini: "#a8763a", night: false, dusk: true,
     caption: "Every evening, it catches fire.", whisper: "" },
   { skyTop: "#0b1026", skyBot: "#1c2340", fog: ["#141a33", 0.024], rock: "#221733", kata: "#1c1428", dunes: "#191428", floor: "#171225",
     sun: [9, 7.4], sunC: "#e8e4d8", sunO: 0.85, haloO: 0.12, stars: 1, shimmer: 0, bulbs: 1, motes: ["#c8c0b0", 0.16], spini: "#2c2440", night: true,
@@ -296,6 +308,7 @@ function setChapter(i) {
   target.sunO = c.sunO; target.haloO = c.haloO; target.stars = c.stars;
   target.shimmer = c.shimmer; target.bulbs = c.bulbs; target.motesO = c.motes[1];
   document.body.classList.toggle("night", c.night);
+  document.body.classList.toggle("dusk", !!c.dusk);
   stops.forEach((d, j) => d.classList.toggle("active", j === i));
   caption.classList.remove("show"); whisper.classList.remove("show");
   clearTimeout(whisperTimer);
@@ -477,6 +490,7 @@ tick();
 /* ---------- veil ---------- */
 setTimeout(() => {
   veil.classList.add("gone");
+  document.body.classList.add("settled");
   stops[0].classList.add("active");
   caption.textContent = CHAPTERS[0].caption;
   setTimeout(() => caption.classList.add("show"), 900);

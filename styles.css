@@ -12,35 +12,55 @@ canvas#rock { position: fixed; inset: 0; width: 100%; height: 100%; display: blo
 
 .chrome { position: fixed; z-index: 20; transition: opacity 0.9s ease; }
 .chrome.idle { opacity: 0.14; pointer-events: none; }
+#dial.idle { opacity: 1; pointer-events: auto; } /* navigation never recedes: full awake contrast and direct taps at rest */
 #masthead { top: max(18px, env(safe-area-inset-top)); left: 22px; }
 
+/* foreground haze: desert light pooling at the near corner so the ink has a
+   quiet floor on every chapter - feathered to nothing, no edges, no card */
+#textwash { position: fixed; left: 0; bottom: 0; width: 96%; height: 50%; z-index: 10;
+  background: radial-gradient(ellipse 125% 120% at 0% 100%, rgba(247, 226, 196, 0.76) 0%, rgba(247, 226, 196, 0.52) 48%, rgba(247, 226, 196, 0) 80%);
+  opacity: 0; transition: opacity 1.4s ease; pointer-events: none; }
+body.settled #textwash { opacity: 1; }
+body.night #textwash { background: radial-gradient(ellipse 110% 105% at 0% 100%, rgba(58, 44, 76, 0.6), rgba(58, 44, 76, 0) 72%); }
+
 #caption { left: 22px; right: 150px; bottom: 116px; font-style: italic; font-size: 1.45rem; line-height: 1.25;
-  color: #5d2413; opacity: 0; transform: translateY(10px); transition: opacity 1.1s ease, transform 1.1s ease; }
+  color: #4e1c0e; opacity: 0; transform: translateY(10px); transition: opacity 1.1s ease, transform 1.1s ease;
+  text-shadow: 0 1px 10px rgba(247, 226, 196, 0.5); }
 #caption.show { opacity: 1; transform: none; }
-#whisper { left: 22px; right: 120px; bottom: 78px; font-size: 1rem; color: #6e3018; opacity: 0;
-  transform: translateY(8px); transition: opacity 1.1s ease, transform 1.1s ease; }
-#whisper.show { opacity: 0.85; transform: none; }
-body.night #caption { color: #e9ddc8; }
-body.night #whisper { color: #cbbfa8; }
-body.night .wordmark-small { color: #d8cbaf; }
+#whisper { left: 22px; right: 120px; bottom: 78px; font-size: 1rem; color: #55200f; opacity: 0;
+  transform: translateY(8px); transition: opacity 1.1s ease, transform 1.1s ease;
+  text-shadow: 0 1px 8px rgba(247, 226, 196, 0.45); }
+#whisper.show { opacity: 1; transform: none; }
+body.night #caption { color: #f4ecd9; text-shadow: 0 1px 12px rgba(20, 12, 28, 0.65); }
+body.night #whisper { color: #f0e8d4; text-shadow: 0 1px 10px rgba(20, 12, 28, 0.6); }
+body.night .wordmark-small { color: #e4d8bf; }
 
 /* the sun dial - a corner arc tracing the sun's journey, not a bottom sheet */
-#dial { right: 6px; bottom: 6px; width: 210px; height: 190px; color: #8a3b22; touch-action: none; }
-body.night #dial { color: #b9a98c; }
+#dial { right: 6px; bottom: 6px; width: 210px; height: 190px; color: #6e2a14; touch-action: none; }
+body.night #dial { color: #ddcfae; }
+body.night .stop i { opacity: 0.62; box-shadow: 0 0 6px 1px rgba(20, 12, 28, 0.5); }
+/* dusk chapters (sunset): the dial corner sits on dark ground - light ink there */
+body.dusk #dial { color: #f9efdb; }
+body.dusk .stop i { opacity: 0.8; box-shadow: 0 0 3px 2.5px rgba(30, 12, 6, 0.7); }
+body.dusk .stop em { text-shadow: 0 1px 4px rgba(30, 12, 6, 0.65); }
+body.dusk .stop.active i { opacity: 1; }
+body.night .stop.active i { opacity: 1; }
 #dialarc { position: absolute; inset: 0; width: 100%; height: 100%; }
 .stop { position: absolute; width: 48px; height: 48px; border: 0; background: none; cursor: pointer;
+  color: inherit; /* buttons default to buttontext; the dial's scene ink must flow through */
   display: grid; place-items: center; }
-.stop i { width: 12px; height: 12px; border-radius: 50%; background: currentColor; opacity: 0.4;
+.stop i { width: 12px; height: 12px; border-radius: 50%; background: currentColor; opacity: 0.75;
+  box-shadow: 0 0 4px 1px rgba(247, 226, 196, 0.55);
   transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s, box-shadow 0.4s; }
 .stop.moon i { border-radius: 50% 50% 50% 4px; }
 .stop.active i { opacity: 1; transform: scale(1.7); box-shadow: 0 0 14px 3px rgba(255, 190, 120, 0.6); }
 .stop span { position: absolute; bottom: calc(100% - 8px); left: 50%; transform: translateX(-50%) translateY(4px);
   font-size: 0.85rem; letter-spacing: 0.06em; color: inherit; opacity: 0; transition: opacity 0.45s, transform 0.45s;
   white-space: nowrap; pointer-events: none; }
-.stop.active span { opacity: 0.9; transform: translateX(-50%) translateY(0); }
+.stop.active span { opacity: 1; transform: translateX(-50%) translateY(0); }
 .stop[data-scene="0"] { left: 3px;   top: 110px; }
 .stop[data-scene="1"] { left: 61px;  top: 69px; }
-.stop[data-scene="2"] { left: 142px; top: 100px; }
+.stop[data-scene="2"] { left: 130px; top: 96px; }
 .stop[data-scene="3"] { left: 158px; top: 126px; }
 @media (min-width: 760px) {
   #caption { font-size: 1.8rem; right: 320px; bottom: 130px; }
