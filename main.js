@@ -322,7 +322,10 @@ function setChapter(i) {
   target.shimmer = c.shimmer; target.bulbs = c.bulbs; target.motesO = c.motes[1];
   document.body.classList.toggle("night", c.night);
   document.body.classList.toggle("dusk", !!c.dusk);
-  stops.forEach((d, j) => d.classList.toggle("active", j === i));
+  stops.forEach((d, j) => {
+    d.classList.toggle("active", j === i);
+    if (j === i) d.setAttribute("aria-current", "true"); else d.removeAttribute("aria-current");
+  });
   caption.classList.remove("show"); whisper.classList.remove("show");
   clearTimeout(whisperTimer);
   startCue(i);
@@ -505,6 +508,7 @@ setTimeout(() => {
   veil.classList.add("gone");
   document.body.classList.add("settled");
   stops[0].classList.add("active");
+  stops[0].setAttribute("aria-current", "true");
   caption.textContent = CHAPTERS[0].caption;
   setTimeout(() => caption.classList.add("show"), 900);
   whisper.textContent = CHAPTERS[0].whisper;
