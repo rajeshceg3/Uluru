@@ -52,7 +52,7 @@ sky.frustumCulled = false; sky.renderOrder = -10;
 scene.add(sky);
 
 /* ---------- sun / moon ---------- */
-const sunMat = new THREE.MeshBasicMaterial({ color: "#ffcf9e", transparent: true, opacity: 1 });
+const sunMat = new THREE.MeshBasicMaterial({ color: "#ffab5e", transparent: true, opacity: 1 });
 const sun = new THREE.Mesh(new THREE.CircleGeometry(1.5, 32), sunMat);
 sun.position.set(-8, 4.6, -38);
 scene.add(sun);
@@ -81,7 +81,7 @@ function haloTexture() {
   t.generateMipmaps = false; t.needsUpdate = true;
   return t;
 }
-const haloMat = new THREE.MeshBasicMaterial({ color: "#ffcf9e", transparent: true, opacity: 0.28, alphaMap: haloTexture() });
+const haloMat = new THREE.MeshBasicMaterial({ color: "#ffab5e", transparent: true, opacity: 0.36, alphaMap: haloTexture() });
 const halo = new THREE.Mesh(new THREE.CircleGeometry(3.6, 32), haloMat);
 halo.position.copy(sun.position);
 scene.add(halo);
@@ -258,7 +258,7 @@ function embers(x, y) {
 /* ---------- chapters: one day over the rock ---------- */
 const CHAPTERS = [
   { skyTop: "#ffe8d6", skyBot: "#f9c39a", fog: ["#f6bd97", 0.012], rock: "#a4553f", kata: "#c08a76", dunes: "#d99a6c", floor: "#c98a5f",
-    sun: [-8, 4.6], sunC: "#ffcf9e", sunO: 1, haloO: 0.28, stars: 0, shimmer: 0, bulbs: 0, motes: ["#ffe0b8", 0.32], spini: "#c8a24f", night: false,
+    sun: [-8, 4.6], sunC: "#ffab5e", sunO: 1, haloO: 0.36, stars: 0, shimmer: 0, bulbs: 0, motes: ["#ffe0b8", 0.32], spini: "#c8a24f", night: false,
     caption: "The rock wakes in blush.", whisper: "Six hundred million years old." },
   { skyTop: "#bfe0ee", skyBot: "#f0e2c0", fog: ["#ecd9b4", 0.010], rock: "#b3402a", kata: "#c96f4e", dunes: "#d98e52", floor: "#cf8350",
     sun: [0, 8.6], sunC: "#fff3d0", sunO: 1, haloO: 0.2, stars: 0, shimmer: 1, bulbs: 0, motes: ["#fff2d8", 0.3], spini: "#d4b25c", night: false,
@@ -267,7 +267,7 @@ const CHAPTERS = [
     sun: [11.5, 1.1], sunC: "#ffb45e", sunO: 1, haloO: 0.4, stars: 0, shimmer: 0, bulbs: 0, motes: ["#ffc890", 0.36], spini: "#a8763a", night: false, dusk: true,
     caption: "Every evening, it catches fire.", whisper: "" },
   { skyTop: "#0b1026", skyBot: "#1c2340", fog: ["#141a33", 0.024], rock: "#221733", kata: "#1c1428", dunes: "#191428", floor: "#171225",
-    sun: [9, 7.4], sunC: "#e8e4d8", sunO: 0.85, haloO: 0.12, stars: 1, shimmer: 0, bulbs: 1, motes: ["#c8c0b0", 0.16], spini: "#2c2440", night: true,
+    sun: [9, 7.4], sunC: "#e8e4d8", sunO: 0.85, haloO: 0.22, stars: 1, shimmer: 0, bulbs: 1, motes: ["#c8c0b0", 0.16], spini: "#2c2440", night: true,
     caption: "Fifty thousand lights bloom in the dark.", whisper: "Sacred Anangu land - seen, never climbed." },
 ];
 let chapter = 0;
@@ -277,7 +277,7 @@ const target = {
   kata: new THREE.Color(CHAPTERS[0].kata), dunes: new THREE.Color(CHAPTERS[0].dunes), floor: new THREE.Color(CHAPTERS[0].floor),
   sunC: new THREE.Color(CHAPTERS[0].sunC), motes: new THREE.Color(CHAPTERS[0].motes[0]), spini: new THREE.Color(CHAPTERS[0].spini),
   fogN: CHAPTERS[0].fog[1], sunX: CHAPTERS[0].sun[0], sunY: CHAPTERS[0].sun[1],
-  sunO: 1, haloO: 0.28, stars: 0, shimmer: 0, bulbs: 0, motesO: 0.32,
+  sunO: 1, haloO: 0.36, stars: 0, shimmer: 0, bulbs: 0, motesO: 0.32,
 };
 
 /* ---------- chrome ---------- */
