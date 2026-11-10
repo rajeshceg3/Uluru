@@ -1,0 +1,11 @@
+{
+  "name": "uluru-exterior-study",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/browser-gate.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "24.26.1"
+  }
+}
