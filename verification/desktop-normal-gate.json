@@ -1,0 +1,42 @@
+[
+  {
+    "width": 1440,
+    "motion": "no-preference",
+    "chapter": 0,
+    "resetHeld": true,
+    "audioOff": true,
+    "targets": true,
+    "labels": true,
+    "overflow": false
+  },
+  {
+    "width": 1440,
+    "motion": "no-preference",
+    "chapter": 1,
+    "resetHeld": true,
+    "audioOff": true,
+    "targets": true,
+    "labels": true,
+    "overflow": false
+  },
+  {
+    "width": 1440,
+    "motion": "no-preference",
+    "chapter": 2,
+    "resetHeld": true,
+    "audioOff": true,
+    "targets": true,
+    "labels": true,
+    "overflow": false
+  },
+  {
+    "width": 1440,
+    "motion": "no-preference",
+    "chapter": 3,
+    "resetHeld": true,
+    "audioOff": true,
+    "targets": true,
+    "labels": true,
+    "overflow": false
+  }
+]

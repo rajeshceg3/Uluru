@@ -1,0 +1,27 @@
+name: Browser scene gate
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  scene-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: node --check main.js
+      - name: Every chapter, phone and desktop
+        run: |
+          python3 -m http.server 8792 > /tmp/server.log 2>&1 &
+          server=$!
+          trap 'kill $server 2>/dev/null || true' EXIT
+          npm test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scene-pixels
+          path: verification/browser/
