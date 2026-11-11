@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import { createSoundscape } from './soundscape/soundscape-engine.js';
+import soundProgram from './soundscape/soundscape-program.js';
 
 // Illustrative exterior study. No climbing route or sacred-site reconstruction.
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -373,6 +375,7 @@ function reset() {
 function setChapter(i) {
   chapter = i;
   const c = chapters[i];
+  soundscape.setScene(AUDIO_SCENES[i]);
   caption.textContent = c.caption;
   detail.textContent = c.detail;
   buttons.forEach((b, j) => {
@@ -462,47 +465,30 @@ dial.addEventListener("keydown", (e) => {
     buttons[chapter].focus();
   }
 });
-// Opt-in synthesized wind only. No cultural music or asserted field recording.
-let audio = null,
-  master = null,
-  audioOn = false;
+/* Opt-in red-centre sound, off by default. Synthesized from what the place
+   holds: cool dawn air and sparse birds, hot wind over spinifex at midday,
+   flock chatter as the light eases, cold night air with a distant dingo.
+   Environmental only - no cultural music, no voice. Follows the chapter. */
+const AUDIO_SCENES = ["dawn", "midday", "lastLight", "night"];
+const soundscape = createSoundscape(soundProgram, { masterGain: 0.9 });
+let audioStarted = false;
 const audioButton = document.querySelector("#audio-orb");
 audioButton.addEventListener("click", async () => {
-  if (!audio) {
-    audio = new AudioContext();
-    master = audio.createGain();
-    master.gain.value = 0;
-    master.connect(audio.destination);
-    const buffer = audio.createBuffer(
-        1,
-        audio.sampleRate * 6,
-        audio.sampleRate,
-      ),
-      data = buffer.getChannelData(0);
-    let last = 0;
-    for (let i = 0; i < data.length; i++) {
-      last = (last + (Math.random() * 2 - 1) * 0.015) / 1.015;
-      data[i] = last * 3.5;
-    }
-    const src = audio.createBufferSource();
-    src.buffer = buffer;
-    src.loop = true;
-    const filter = audio.createBiquadFilter();
-    filter.type = "lowpass";
-    filter.frequency.value = 430;
-    src.connect(filter).connect(master);
-    src.start();
+  if (!audioStarted) {
+    audioStarted = true;
+    await soundscape.start(AUDIO_SCENES[chapter]);
+  } else {
+    soundscape.setOn(!soundscape.on);
   }
-  await audio.resume();
-  audioOn = !audioOn;
-  master.gain.setTargetAtTime(audioOn ? 0.16 : 0, audio.currentTime, 0.35);
-  audioButton.setAttribute("aria-pressed", String(audioOn));
+  audioButton.setAttribute("aria-pressed", String(soundscape.on));
   audioButton.setAttribute(
     "aria-label",
-    audioOn ? "Mute desert wind" : "Play desert wind",
+    soundscape.on ? "Mute desert wind" : "Play desert wind",
   );
-  audioButton.textContent = audioOn ? "Sound on" : "Sound";
+  audioButton.textContent = soundscape.on ? "Sound on" : "Sound";
 });
+document.addEventListener("visibilitychange", () => soundscape.handleVisibility());
+window.__soundscape = soundscape;
 setChapter(0);
 resize();
 function tick(now) {
