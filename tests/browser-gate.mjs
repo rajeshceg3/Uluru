@@ -22,6 +22,9 @@ try {
       await p.emulateMediaFeatures([
         { name: "prefers-reduced-motion", value: motion },
       ]);
+      await p.evaluateOnNewDocument(() =>
+        localStorage.setItem("uluru-chrome-pin", "1"),
+      );
       await p.goto(process.env.BASE_URL || "http://127.0.0.1:8792");
       await p.waitForSelector("#veil.gone");
       for (let chapter = 0; chapter < 4; chapter++) {
@@ -101,6 +104,58 @@ try {
       assert.deepEqual(errors, []);
       await p.close();
     }
+  // Unpinned: chrome greets, retires, hint shows, tap wakes, pin persists.
+  for (const width of [390, 1440]) {
+    const p = await browser.newPage();
+    const errors = [];
+    p.on("pageerror", (e) => errors.push(String(e)));
+    await p.setViewport({ width, height: 844 });
+    await p.evaluateOnNewDocument(() =>
+      localStorage.removeItem("uluru-chrome-pin"),
+    );
+    await p.goto(process.env.BASE_URL || "http://127.0.0.1:8792");
+    await p.waitForSelector("#veil.gone");
+    const on = () => p.$eval("body", (b) => b.classList.contains("chrome-on"));
+    const vis = (s) => p.$eval(s, (e) => getComputedStyle(e).visibility);
+    assert.equal(await on(), true, "greeting shows chrome");
+    await p.waitForFunction(
+      () => !document.body.classList.contains("chrome-on"),
+      { timeout: 9000 },
+    );
+    await new Promise((r) => setTimeout(r, 400));
+    assert.equal(await on(), false, "chrome retired");
+    assert.equal(await vis("#dial"), "hidden");
+    assert.equal(await vis("#chrome-hint"), "visible");
+    assert.equal(await vis("#caption"), "visible", "story note stays");
+    await p.screenshot({ path: `${out}/quiet-${width}.png` });
+    await p.click("#chrome-hint");
+    assert.equal(await on(), true, "hint wakes chrome");
+    assert.equal(await vis("#dial"), "visible");
+    await p.screenshot({ path: `${out}/woken-${width}.png` });
+    await p.click("#pin-chrome");
+    await new Promise((r) => setTimeout(r, 3500));
+    assert.equal(await on(), true, "pinned holds");
+    assert.equal(
+      await p.evaluate(() => localStorage.getItem("uluru-chrome-pin")),
+      "1",
+    );
+    await p.click("#pin-chrome");
+    await p.mouse.move(width / 2, 400);
+    await p.keyboard.press("Escape");
+    await new Promise((r) => setTimeout(r, 300));
+    assert.equal(await on(), false, "escape retires unpinned");
+    if (width > 760) {
+      await p.mouse.move(width / 2, 830);
+      assert.equal(await on(), true, "bottom edge wakes");
+      await p.mouse.move(width / 2, 400);
+      await p.waitForFunction(
+        () => !document.body.classList.contains("chrome-on"),
+        { timeout: 9000 },
+      );
+    }
+    assert.deepEqual(errors, []);
+    await p.close();
+  }
   fs.writeFileSync(`${out}/results.json`, JSON.stringify(results, null, 2));
   console.log(results);
 } finally {
