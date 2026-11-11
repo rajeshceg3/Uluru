@@ -1,4 +1,9 @@
 @font-face {
+  font-family: "Caveat Brush";
+  src: url("./fonts/caveat-brush-latin-400.woff2");
+  font-display: swap;
+}
+@font-face {
   font-family: Cormorant;
   src: url("./fonts/cormorant-garamond-400-normal.woff2");
 }
@@ -55,48 +60,124 @@ button:focus-visible {
   font-weight: 400;
   letter-spacing: 0.2em;
 }
+:root {
+  --paper: #ecd3a6;
+  --paper-dim: #dcb987;
+  --ink: #2a1710;
+  --sun: #f0952f;
+  --rock: #b3402a;
+  --bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.wordmark-small {
+  font-family: "Caveat Brush", Georgia, serif;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--ink);
+  padding: 0 4px;
+}
+/* hand-drawn controls */
+.hand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  min-width: 48px;
+  padding: 10px 16px;
+  font-family: system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.2;
+  color: var(--ink);
+  background: var(--paper);
+  border: 2.5px solid var(--ink);
+  border-radius: 14px 22px 12px 20px / 20px 12px 22px 14px;
+  box-shadow: 3px 4px 0 var(--ink);
+  transition:
+    transform 0.14s var(--bounce),
+    box-shadow 0.14s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.hand-btn:active {
+  transform: translate(2.5px, 3.5px);
+  box-shadow: 0.5px 0.5px 0 var(--ink);
+}
+.hand-btn--primary {
+  background: var(--sun);
+  font-size: 18px;
+  padding: 12px 22px;
+  border-radius: 20px 12px 22px 14px / 14px 22px 12px 20px;
+}
+.hand-btn--ghost {
+  background: rgba(236, 211, 166, 0.92);
+  box-shadow: 2px 3px 0 var(--ink);
+  border-style: dashed;
+}
+.hand-btn[aria-pressed="true"] {
+  background: var(--paper-dim);
+  border-style: solid;
+}
+.ink-icon,
+#chrome-hint svg,
+#dialarc {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ink-icon {
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
 #masthead {
   position: fixed;
   z-index: 20;
-  left: 18px;
-  top: max(18px, env(safe-area-inset-top));
-  padding: 7px 11px;
-  background: rgba(25, 18, 20, 0.92);
-  border-radius: 5px;
+  left: 14px;
+  top: max(14px, env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 4px 3px 10px;
+  background: var(--paper);
+  border: 2.5px solid var(--ink);
+  border-radius: 10px 20px 12px 18px / 18px 10px 20px 12px;
+  box-shadow: 3px 4px 0 var(--ink);
 }
-.wordmark-small {
-  font-size: 16px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+#masthead .pin {
+  min-height: 44px;
+  padding: 6px 12px;
+  box-shadow: none;
 }
+#masthead .pin:active {
+  transform: translate(1px, 1.5px);
+}
+/* bottom bar: one bright action, quiet ghosts beside it */
 #orbs {
   position: fixed;
-  z-index: 20;
-  right: 16px;
-  top: max(16px, env(safe-area-inset-top));
+  z-index: 22;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: max(14px, env(safe-area-inset-bottom));
   display: flex;
-  gap: 8px;
-}
-#orbs button {
-  height: 44px;
-  min-width: 54px;
-  border: 1px solid #bca29488;
-  border-radius: 22px;
-  background: rgba(25, 18, 20, 0.94);
-  font-size: 16px;
-  padding: 0 12px;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
 }
 #journey-text {
   position: fixed;
   z-index: 20;
-  left: 18px;
-  bottom: max(172px, calc(env(safe-area-inset-bottom) + 155px));
+  left: 14px;
+  bottom: max(236px, calc(env(safe-area-inset-bottom) + 222px));
   max-width: 460px;
-  width: calc(100% - 36px);
-  padding: 15px 18px;
-  background: rgba(25, 18, 20, 0.94);
-  border: 1px solid #d4b79b28;
-  border-radius: 8px;
+  width: calc(100% - 28px);
+  padding: 13px 18px 14px;
+  color: var(--ink);
+  background: rgba(236, 211, 166, 0.95);
+  border: 2.5px solid var(--ink);
+  border-radius: 12px 22px 14px 20px / 20px 12px 22px 14px;
+  box-shadow: 3px 4px 0 var(--ink);
   pointer-events: none;
 }
 #caption {
@@ -108,20 +189,23 @@ button:focus-visible {
   font-family: system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  margin-top: 10px;
-  color: #f1e1d0;
+  margin-top: 8px;
+  color: #3a2216;
 }
+/* the dial: the sun's own path over the rock, stops are trail signs */
 #dial {
   position: fixed;
   z-index: 21;
-  bottom: max(14px, env(safe-area-inset-bottom));
+  bottom: max(86px, calc(env(safe-area-inset-bottom) + 86px));
   left: 50%;
   transform: translateX(-50%);
   width: 330px;
   height: 132px;
-  border-radius: 80% 80% 15px 15px;
-  background: rgba(25, 18, 20, 0.94);
-  border: 1px solid #bca29455;
+  border-radius: 80% 78% 15px 18px / 90% 86% 15px 18px;
+  background: var(--paper);
+  color: var(--ink);
+  border: 2.5px solid var(--ink);
+  box-shadow: 3px 4px 0 var(--ink);
   touch-action: none;
 }
 #dialarc {
@@ -129,36 +213,49 @@ button:focus-visible {
   inset: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.45;
   pointer-events: none;
+  stroke-width: 2.4;
+  stroke-dasharray: 1 7;
+  opacity: 0.85;
 }
 .stop {
   position: absolute;
   width: 68px;
   height: 56px;
-  border: 0;
-  border-radius: 15px;
-  background: transparent;
+  background: var(--paper-dim);
+  border: 2px solid var(--ink);
+  border-radius: 8px 14px 9px 13px / 13px 9px 14px 8px;
+  box-shadow: 2px 3px 0 var(--ink);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 6px;
+  font-family: system-ui, sans-serif;
   font-size: 16px;
   line-height: 1;
+  color: var(--ink);
+  transition:
+    transform 0.14s var(--bounce),
+    box-shadow 0.14s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.stop:active {
+  transform: translate(2px, 2.5px);
+  box-shadow: 0.5px 0.5px 0 var(--ink);
 }
 .stop i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #bcaa98;
-}
-.stop.active i {
-  background: #fff2c8;
-  box-shadow: 0 0 12px #f8c679;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--ink);
+  border-radius: 50% 46% 52% 48%;
+  background: transparent;
 }
 .stop.active {
-  background: #ffffff10;
+  background: var(--sun);
+}
+.stop.active i {
+  background: var(--rock);
 }
 .stop[data-scene="0"] {
   left: 14px;
@@ -176,6 +273,55 @@ button:focus-visible {
   left: 245px;
   top: 58px;
 }
+button:focus-visible {
+  outline: 3px solid #fff3c2;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px var(--ink);
+}
+/* chrome retires; the world leads */
+.chrome {
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s;
+}
+body:not(.chrome-on) .chrome {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.chrome-hint {
+  position: fixed;
+  z-index: 19;
+  top: max(4px, env(safe-area-inset-top));
+  left: 50%;
+  width: 72px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 0;
+  color: #fff3c2;
+  filter: drop-shadow(0 2px 2px rgba(20, 10, 6, 0.6));
+  animation: hint-sway 3.2s ease-in-out infinite;
+}
+.chrome-hint svg {
+  width: 52px;
+  height: 30px;
+  stroke-width: 3;
+}
+body.chrome-on .chrome-hint {
+  visibility: hidden;
+  animation: none;
+}
+@keyframes hint-sway {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(4px);
+  }
+}
 @media (min-width: 760px) {
   #journey-text {
     left: 32px;
@@ -184,16 +330,29 @@ button:focus-visible {
   }
   #dial {
     left: auto;
-    right: 26px;
+    right: 28px;
     transform: none;
+    bottom: 32px;
   }
   #masthead {
     left: 32px;
     top: 26px;
   }
+}
+@media (max-width: 420px) {
   #orbs {
-    right: 28px;
-    top: 26px;
+    gap: 8px;
+  }
+  #orbs .hand-btn--primary {
+    padding: 10px 14px;
+    font-size: 17px;
+  }
+  #orbs .hand-btn--primary .ink-icon,
+  #reset-orb span {
+    display: none;
+  }
+  #orbs .hand-btn--ghost {
+    padding: 8px 10px;
   }
 }
 @media (max-width: 350px) {
@@ -213,20 +372,12 @@ button:focus-visible {
     left: 225px;
   }
   #journey-text {
-    padding: 12px 14px;
+    padding: 11px 14px;
     left: 12px;
     width: calc(100% - 24px);
   }
   #masthead {
     left: 12px;
-  }
-  #orbs {
-    right: 12px;
-    gap: 5px;
-  }
-  #orbs button {
-    min-width: 50px;
-    padding: 0 9px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

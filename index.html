@@ -24,7 +24,7 @@
       }
     </script>
   </head>
-  <body>
+  <body class="chrome-on">
     <canvas
       id="rock"
       aria-label="Uluru through one day. Drag slowly to drift."
@@ -34,25 +34,35 @@
       <h1 class="wordmark">Uluru</h1>
     </div>
 
-    <header id="masthead" class="chrome">
+    <header id="masthead" class="chrome chrome-top">
       <span class="wordmark-small">Uluru</span>
-    </header>
-
-    <div id="orbs">
-      <button id="reset-orb" aria-label="Reset this view">Reset</button
-      ><button
-        id="audio-orb"
-        aria-label="Play desert wind"
+      <button
+        id="pin-chrome"
+        class="hand-btn hand-btn--ghost pin"
         aria-pressed="false"
+        aria-label="Keep controls showing"
       >
-        Sound
+        <svg class="ink-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12.4 3.6 L12.1 13.8" />
+          <path d="M7.2 13.9 Q12.2 12.6 17.1 14.2" />
+          <path d="M12 14 L11.8 20.6" />
+          <path d="M8.8 6.2 Q12 3.2 15.5 6.1" />
+        </svg>
+        <span>Keep</span>
       </button>
-    </div>
+    </header>
+    <button id="chrome-hint" class="chrome-hint" aria-label="Show controls">
+      <svg viewBox="0 0 60 34" aria-hidden="true">
+        <path d="M5 30 Q10 20 17 20 Q24 20 30 30" />
+        <path d="M30 30 Q36 4 44 6 Q52 8 55 30" />
+        <path d="M23 8.6 L21.6 3.6 M30.4 5.8 L30.2 1.2 M37.4 8.2 L39.6 3.8" />
+      </svg>
+    </button>
     <section id="journey-text" aria-label="About this moment">
-      <p id="caption" class="chrome" role="status"></p>
-      <p id="whisper" class="chrome"></p>
+      <p id="caption" role="status"></p>
+      <p id="whisper"></p>
     </section>
-    <nav id="dial" class="chrome" aria-label="Moments of the day">
+    <nav id="dial" class="chrome chrome-bottom" aria-label="Moments of the day">
       <svg id="dialarc" viewBox="0 0 180 180" aria-hidden="true">
         <path
           d="M 27 134 Q 82 72 154 120 Q 172 130 182 148"
@@ -96,6 +106,28 @@
         <i></i><span>Night</span>
       </button>
     </nav>
+    <div id="orbs" class="chrome chrome-bottom">
+      <button id="reset-orb" class="hand-btn hand-btn--ghost" aria-label="Reset this view">
+        <svg class="ink-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5.2 12.4 Q5 6.4 11.8 5.2 Q18.6 5 19.4 11.6 Q19.8 18.2 12.6 19" />
+          <path d="M3 9.6 L5.4 12.8 L8.6 10.4" />
+        </svg>
+        <span>Reset</span></button
+      ><button id="next-moment" class="hand-btn hand-btn--primary" aria-label="Follow the sun to the next moment">
+        <svg class="ink-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 7.4 Q16.4 7.2 16.6 12 Q16.4 16.6 11.8 16.6 Q7.4 16.4 7.4 11.8 Q7.6 7.6 12 7.4 Z" />
+          <path d="M12 2.6 L12.2 4.6 M12 19.6 L11.8 21.6 M2.4 12 L4.4 12.2 M19.6 11.8 L21.6 12 M5.2 5 L6.6 6.4 M17.4 17.6 L18.8 19 M18.8 5.2 L17.4 6.6 M6.6 17.6 L5.2 19" />
+        </svg>
+        <span>Follow the sun</span></button
+      ><button
+        id="audio-orb"
+        class="hand-btn hand-btn--ghost"
+        aria-label="Play desert wind"
+        aria-pressed="false"
+      >
+        Sound
+      </button>
+    </div>
 
     <script type="module" src="main.js"></script>
   </body>

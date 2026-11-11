@@ -537,3 +537,77 @@ function tick(now) {
 }
 requestAnimationFrame(tick);
 setTimeout(() => document.querySelector("#veil").classList.add("gone"), 450);
+
+// Place-true chrome: the controls greet, retire, and visit when called.
+{
+  const body = document.body,
+    top = document.querySelector("#masthead"),
+    bottom = [document.querySelector("#orbs"), document.querySelector("#dial")],
+    pin = document.querySelector("#pin-chrome"),
+    hint = document.querySelector("#chrome-hint"),
+    KEY = "uluru-chrome-pin",
+    GREET = 2600;
+  let pinned = false,
+    timer = 0,
+    zone = false;
+  try {
+    pinned = localStorage.getItem(KEY) === "1";
+  } catch (_) {}
+  const ui = [top, ...bottom];
+  const held = () =>
+    zone || ui.some((el) => el.matches(":focus-within") || el.matches(":hover"));
+  const show = () => {
+    clearTimeout(timer);
+    body.classList.add("chrome-on");
+    if (!pinned) timer = setTimeout(retire, GREET);
+  };
+  const retire = () => {
+    if (pinned) return;
+    if (held()) {
+      timer = setTimeout(retire, GREET);
+      return;
+    }
+    body.classList.remove("chrome-on");
+    const a = document.activeElement;
+    if (a && ui.some((el) => el.contains(a))) a.blur();
+  };
+  const setPin = (v) => {
+    pinned = v;
+    pin.setAttribute("aria-pressed", String(v));
+    try {
+      localStorage.setItem(KEY, v ? "1" : "0");
+    } catch (_) {}
+    v ? (clearTimeout(timer), body.classList.add("chrome-on")) : show();
+  };
+  pin.addEventListener("click", () => setPin(!pinned));
+  hint.addEventListener("click", () => {
+    show();
+    pin.focus({ preventScroll: true });
+  });
+  addEventListener("pointermove", (e) => {
+    if (e.pointerType === "touch") return;
+    zone = e.clientY < 96 || e.clientY > innerHeight - 150;
+    if (zone) show();
+  });
+  document.addEventListener("pointerleave", () => (zone = false));
+  addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !pinned) {
+      zone = false;
+      body.classList.remove("chrome-on");
+      clearTimeout(timer);
+      const a = document.activeElement;
+      if (a && ui.some((el) => el.contains(a))) a.blur();
+    } else if (e.key === "Tab") show();
+  });
+  ui.forEach((el) =>
+    el.addEventListener("pointerdown", () => {
+      if (!pinned) show();
+    }),
+  );
+  document
+    .querySelector("#next-moment")
+    .addEventListener("click", () => setChapter((chapter + 1) % chapters.length));
+  pin.setAttribute("aria-pressed", String(pinned));
+  body.classList.add("chrome-on");
+  if (!pinned) timer = setTimeout(retire, GREET + 450);
+}
