@@ -105,19 +105,30 @@ try {
       await p.close();
     }
   // Unpinned: chrome greets, retires, hint shows, tap wakes, pin persists.
-  for (const width of [390, 1440]) {
+  for (const width of JSON.parse(process.env.UNPINNED_WIDTHS || "[390,1440]")) {
     const p = await browser.newPage();
     const errors = [];
     p.on("pageerror", (e) => errors.push(String(e)));
     await p.setViewport({ width, height: 844 });
-    await p.evaluateOnNewDocument(() =>
-      localStorage.removeItem("uluru-chrome-pin"),
-    );
+    await p.evaluateOnNewDocument(() => {
+      localStorage.removeItem("uluru-chrome-pin");
+      addEventListener("DOMContentLoaded", () => {
+        window.__seenOn = document.body.classList.contains("chrome-on");
+        new MutationObserver(() => {
+          if (document.body.classList.contains("chrome-on"))
+            window.__seenOn = true;
+        }).observe(document.body, { attributes: true });
+      });
+    });
     await p.goto(process.env.BASE_URL || "http://127.0.0.1:8792");
     await p.waitForSelector("#veil.gone");
     const on = () => p.$eval("body", (b) => b.classList.contains("chrome-on"));
     const vis = (s) => p.$eval(s, (e) => getComputedStyle(e).visibility);
-    assert.equal(await on(), true, "greeting shows chrome");
+    assert.equal(
+      await p.evaluate(() => window.__seenOn),
+      true,
+      "greeting shows chrome",
+    );
     await p.waitForFunction(
       () => !document.body.classList.contains("chrome-on"),
       { timeout: 9000 },
