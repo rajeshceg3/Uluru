@@ -401,6 +401,9 @@ function resize() {
   setChapter(chapter);
 }
 addEventListener("resize", resize);
+addEventListener("resize", () => {
+  if (noteOpen) placeNote();
+});
 /* Look-around ported from the shore controller: the world follows the finger
    directly (drag distance scaled by the camera's field of view over the
    viewport, so one swipe covers the same scene fraction on any screen),
@@ -685,6 +688,88 @@ function discoverySetChapter(i) {
   closeNote();
   pickActive();
 }
+/* the note is a field annotation: it appears beside its glimmer, tethered by
+   a hairline leader, in whichever neighbouring quarter covers neither the
+   rock's silhouette nor the chrome. Placement is measured, not assumed. */
+const leaderPath = document.querySelector("#leader path");
+const rockBoxV = new THREE.Vector3();
+function rockScreenRect() {
+  let l = 1e9,
+    t = 1e9,
+    r = -1e9,
+    b = -1e9;
+  for (const cx of [-34, 35])
+    for (const cy of [0, 18.5])
+      for (const cz of [-14, 14]) {
+        rockBoxV.set(cx, cy, cz).project(camera);
+        if (rockBoxV.z > 1) continue;
+        const sx = (rockBoxV.x * 0.5 + 0.5) * innerWidth,
+          sy = (-rockBoxV.y * 0.5 + 0.5) * innerHeight;
+        l = Math.min(l, sx);
+        r = Math.max(r, sx);
+        t = Math.min(t, sy);
+        b = Math.max(b, sy);
+      }
+  const pad = 10;
+  return { l: l - pad, t: t - pad, r: r + pad, b: b + pad };
+}
+const overlap = (a, b) =>
+  Math.max(0, Math.min(a.r, b.r) - Math.max(a.l, b.l)) *
+  Math.max(0, Math.min(a.b, b.b) - Math.max(a.t, b.t));
+function placeNote() {
+  let mx = +canvas.dataset.markerX,
+    my = +canvas.dataset.markerY;
+  if (!Number.isFinite(mx)) {
+    mx = innerWidth / 2;
+    my = innerHeight * 0.32;
+  }
+  const m = 12,
+    W = innerWidth,
+    H = innerHeight,
+    nw = note.offsetWidth,
+    nh = note.offsetHeight;
+  const clampX = (x) => Math.max(m, Math.min(W - m - nw, x)),
+    clampY = (y) => Math.max(m, Math.min(H - m - nh, y));
+  const rock = rockScreenRect();
+  const cands = [
+    { x: mx - nw / 2, y: rock.t - nh - 14 }, // sky band above the silhouette
+    { x: mx - nw / 2, y: rock.b + 14 }, // plain band below it
+    { x: mx - nw / 2, y: my - nh - 20 }, // directly above the glimmer
+    { x: mx - nw / 2, y: my + 20 },
+    { x: mx + 20, y: my - nh / 2 },
+    { x: mx - nw - 20, y: my - nh / 2 },
+  ].map((c) => ({ x: clampX(c.x), y: clampY(c.y) }));
+  const chromeRects = ["#dial", "#orbs", "#masthead"].map((s) => {
+    const q = document.querySelector(s).getBoundingClientRect();
+    return { l: q.left, t: q.top, r: q.right, b: q.bottom };
+  });
+  let best = cands[0],
+    bestScore = 1e18;
+  cands.forEach((c, i) => {
+    const rect = { l: c.x, t: c.y, r: c.x + nw, b: c.y + nh };
+    let score =
+      overlap(rect, rock) * 3 +
+      chromeRects.reduce((s, q) => s + overlap(rect, q), 0) * 8 +
+      i * 0.5; // ties prefer above, then below
+    if (score < bestScore) {
+      bestScore = score;
+      best = c;
+    }
+  });
+  note.style.left = `${best.x}px`;
+  note.style.top = `${best.y}px`;
+  canvas.dataset.noteL = best.x.toFixed(0);
+  canvas.dataset.noteT = best.y.toFixed(0);
+  canvas.dataset.rockRect = `${rock.l.toFixed(0)},${rock.t.toFixed(0)},${rock.r.toFixed(0)},${rock.b.toFixed(0)}`;
+  /* leader: a gently bowed hairline from the glimmer to the note's near edge */
+  const ex = Math.max(best.x, Math.min(best.x + nw, mx)),
+    ey = my < best.y ? best.y : my > best.y + nh ? best.y + nh : Math.max(best.y, Math.min(best.y + nh, my));
+  const bow = (my - ey) * 0.25 + 6;
+  leaderPath.setAttribute(
+    "d",
+    `M ${mx} ${my} Q ${(mx + ex) / 2} ${(my + ey) / 2 + bow} ${ex} ${ey}`,
+  );
+}
 function openNote(d) {
   if (!d || noteOpen) return;
   noteOpen = true;
@@ -698,6 +783,7 @@ function openNote(d) {
   noteBody.textContent = d.body;
   journeyText.style.visibility = "hidden";
   note.hidden = false;
+  placeNote();
   refreshDial();
   canvas.dataset.found = String(found.size);
 }
@@ -705,6 +791,7 @@ function closeNote() {
   if (!noteOpen) return;
   noteOpen = false;
   note.hidden = true;
+  leaderPath.setAttribute("d", "");
   journeyText.style.visibility = "";
   const c = chapters[chapter];
   caption.textContent = c.caption;

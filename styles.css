@@ -187,39 +187,39 @@ button:focus-visible {
   margin-top: 10px;
   color: #f1e1d0;
 }
-/* one discovery note at a time, in the journey text's place */
+/* one discovery note at a time: a field annotation, anchored beside its
+   glimmer by a hairline leader, placed where it covers neither rock nor
+   chrome - never a bottom-sheet card over the world */
 #note {
   position: fixed;
   z-index: 30;
-  left: 18px;
-  bottom: max(236px, calc(env(safe-area-inset-bottom) + 222px));
-  max-width: 460px;
-  width: calc(100% - 36px);
-  padding: 15px 18px;
-  background: rgba(25, 18, 20, 0.96);
-  border: 1px solid #d4b79b55;
-  border-radius: 8px;
+  width: min(300px, calc(100vw - 24px));
+  padding: 12px 14px 13px;
+  background: rgba(25, 18, 20, 0.88);
+  border: 1px solid #d4b79b44;
+  border-radius: 11px 13px 10px 14px;
 }
 #note[hidden] {
   display: none;
 }
 #note-title {
-  font-size: clamp(25px, 3vw, 34px);
-  line-height: 1.12;
+  font-size: 23px;
+  font-style: italic;
+  line-height: 1.1;
   font-weight: 400;
-  padding-right: 44px;
+  padding-right: 36px;
 }
 #note-body {
   font-family: system-ui, sans-serif;
-  font-size: 16px;
-  line-height: 1.55;
-  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-top: 7px;
   color: #f1e1d0;
 }
 #note-close {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 0;
+  right: 0;
   width: 44px;
   height: 44px;
   display: grid;
@@ -229,11 +229,26 @@ button:focus-visible {
   color: #ecd3a6;
 }
 #note-close svg {
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
   fill: none;
   stroke: currentColor;
   stroke-width: 2.4;
+  stroke-linecap: round;
+}
+#leader {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 29;
+  pointer-events: none;
+}
+#leader path {
+  fill: none;
+  stroke: #ecd3a6;
+  stroke-opacity: 0.55;
+  stroke-width: 1.2;
   stroke-linecap: round;
 }
 /* a dial stop quietly fills once its moment has given up its discoveries */
@@ -244,18 +259,23 @@ button:focus-visible {
   background: #fff2c8;
   box-shadow: 0 0 12px #f8c679;
 }
+/* desktop modality: roomier annotation, larger reading sizes, same tether */
 @media (min-width: 760px) {
   #note {
-    left: 32px;
-    bottom: 32px;
-    width: 440px;
+    width: 324px;
+    padding: 15px 17px 16px;
+  }
+  #note-title {
+    font-size: 26px;
+  }
+  #note-body {
+    font-size: 16px;
+    line-height: 1.55;
   }
 }
-@media (max-width: 350px) {
-  #note {
-    padding: 11px 14px;
-    left: 12px;
-    width: calc(100% - 24px);
+@media (prefers-reduced-motion: reduce) {
+  #leader path {
+    stroke-opacity: 0.4;
   }
 }
 #dial {
