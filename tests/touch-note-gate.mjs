@@ -41,7 +41,7 @@ try {
     localStorage.setItem("uluru-chrome-pin", "1");
     localStorage.setItem(
       "uluru-found-v1",
-      '["blush","green-sea","water-writing","hidden-rock","many-heads","burning-face","southern-cross","first-people"]',
+      '["blush","green-sea","first-voices","water-writing","hidden-rock","many-heads","burning-face","shift-change","southern-cross","the-cold","first-people"]',
     );
   });
   await p.goto("http://127.0.0.1:8792");
@@ -57,7 +57,7 @@ try {
   await new Promise((r) => setTimeout(r, 600));
   s = await read(p);
   assert.equal(s.hidden, false, "touch tap opens the lights note and it STAYS open");
-  assert.equal(s.found, 9);
+  assert.equal(s.found, 12);
   // and the note must not sit under the tap point
   const rect = await p.evaluate(() => {
     const n = document.querySelector("#note").getBoundingClientRect();

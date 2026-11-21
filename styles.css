@@ -193,8 +193,8 @@ button:focus-visible {
 #note {
   position: fixed;
   z-index: 30;
-  width: min(300px, calc(100vw - 24px));
-  padding: 12px 14px 13px;
+  width: min(288px, calc(100vw - 24px));
+  padding: 10px 13px 11px;
   background: rgba(25, 18, 20, 0.88);
   border: 1px solid #d4b79b44;
   border-radius: 11px 13px 10px 14px;
@@ -211,9 +211,9 @@ button:focus-visible {
 }
 #note-body {
   font-family: system-ui, sans-serif;
-  font-size: 15px;
-  line-height: 1.5;
-  margin-top: 7px;
+  font-size: 14.5px;
+  line-height: 1.45;
+  margin-top: 6px;
   color: #f1e1d0;
 }
 #note-close {
@@ -235,6 +235,38 @@ button:focus-visible {
   stroke: currentColor;
   stroke-width: 2.4;
   stroke-linecap: round;
+}
+/* the deeper layer: a named thread inside the same annotation, one at a time */
+#note-deeper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 7px;
+  padding: 5px 2px 0;
+  background: none;
+  border: 0;
+  border-top: 1px solid #d4b79b33;
+  color: #ecd3a6;
+  font-family: Cormorant, Georgia, serif;
+  font-style: italic;
+  font-size: 18px;
+  text-align: left;
+}
+#note-deeper svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#note-deeper[aria-expanded="true"] svg {
+  transform: scaleX(-1);
 }
 #leader {
   position: fixed;
@@ -271,6 +303,9 @@ button:focus-visible {
   #note-body {
     font-size: 16px;
     line-height: 1.55;
+  }
+  #note-deeper {
+    font-size: 19px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

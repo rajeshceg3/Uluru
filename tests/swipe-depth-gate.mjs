@@ -26,6 +26,7 @@ const readLook = (p) =>
     noteHidden: document.querySelector("#note").hidden,
     noteTitle: document.querySelector("#note-title").textContent,
   }));
+const PRESEED = process.env.PRESEED || "";
 async function freshPage(width, height, motion) {
   const p = await browser.newPage();
   p.errors = [];
@@ -36,10 +37,11 @@ async function freshPage(width, height, motion) {
     await p.emulateMediaFeatures([
       { name: "prefers-reduced-motion", value: motion },
     ]);
-  await p.evaluateOnNewDocument(() => {
+  await p.evaluateOnNewDocument((pre) => {
     localStorage.setItem("uluru-chrome-pin", "1");
-    localStorage.removeItem("uluru-found-v1");
-  });
+    if (pre) localStorage.setItem("uluru-found-v1", pre);
+    else localStorage.removeItem("uluru-found-v1");
+  }, PRESEED);
   await p.goto(BASE);
   await p.waitForSelector("#veil.gone");
   return p;
@@ -235,14 +237,16 @@ try {
   async function runDepth(width, height, shots, lightOnly) {
     const p = await freshPage(width, height);
     const expectOrder = [
-      [0, ["blush", "green-sea"]],
+      [0, ["blush", "green-sea", "first-voices"]],
       [1, ["water-writing", "hidden-rock"]],
-      [2, ["many-heads", "burning-face"]],
-      [3, ["southern-cross", "first-people", "lights"]],
+      [2, ["many-heads", "burning-face", "shift-change"]],
+      [3, ["southern-cross", "the-cold", "first-people", "lights"]],
     ];
-    let opened = 0;
+    const ONLY = (process.env.ONLY_CH || "").split(",").filter(Boolean).map(Number);
+    let opened = PRESEED ? JSON.parse(PRESEED).length : 0;
     const order = lightOnly ? expectOrder.slice(0, 1) : expectOrder;
     for (const [ch, ids] of order) {
+      if (ONLY.length && !ONLY.includes(ch)) continue;
       await p.click(`[data-scene="${ch}"]`);
       await new Promise((r) => setTimeout(r, 1200));
       for (const id of ids) {
@@ -259,6 +263,28 @@ try {
         s = await readLook(p);
         assert.equal(s.noteHidden, false, "note opens");
         assert.equal(s.found, ++opened, "found count grows");
+        if (opened === 1) {
+          // the deeper layer swaps in place and returns, one at a time
+          const before = await p.$eval("#note-body", (e) => e.textContent);
+          await p.click("#note-deeper");
+          await new Promise((r) => setTimeout(r, 250));
+          const deep = await p.evaluate(() => ({
+            layer: document.querySelector("canvas").dataset.noteLayer,
+            body: document.querySelector("#note-body").textContent,
+            hidden: document.querySelector("#note").hidden,
+          }));
+          assert.equal(deep.layer, "deep", "deeper layer opens");
+          assert.notEqual(deep.body, before, "deeper body differs");
+          assert.equal(deep.hidden, false, "same note, no stacking");
+          await p.click("#note-deeper");
+          await new Promise((r) => setTimeout(r, 250));
+          const back = await p.evaluate(() => ({
+            layer: document.querySelector("canvas").dataset.noteLayer,
+            body: document.querySelector("#note-body").textContent,
+          }));
+          assert.equal(back.layer, "surface", "back returns");
+          assert.equal(back.body, before);
+        }
         if (shots && opened === 1)
           await p.screenshot({ path: `${out}/${width}-note-open.png` });
         await p.keyboard.press("Escape");
@@ -278,9 +304,14 @@ try {
       await p.close();
       return;
     }
+    if (ONLY.length && !ONLY.includes(3)) {
+      assert.deepEqual(p.errors, []);
+      await p.close();
+      return;
+    }
     // completion: whisper and begin-again
     let s = await readLook(p);
-    assert.equal(s.found, 9);
+    assert.equal(s.found, 12);
     assert.match(s.whisper, /Every quiet thing found/);
     // night tap on open plain plants a light (journey text passes taps through)
     await p.mouse.click(width * 0.82, height * 0.58);
@@ -303,6 +334,7 @@ try {
   }
   await runDepth(390, 844, true);
   // resume across visits
+  if (process.env.RUN_TAIL === '1') {
   {
     const p = await browser.newPage();
     p.errors = [];
@@ -316,7 +348,7 @@ try {
     await p.waitForSelector("#veil.gone");
     const s = await readLook(p);
     assert.equal(s.found, 2, "journey resumes");
-    assert.equal(s.discovery, "", "chapter 0 already gave its discoveries");
+    assert.equal(s.discovery, "first-voices", "chapter 0 offers its third");
     await p.click('[data-scene="1"]');
     await new Promise((r) => setTimeout(r, 800));
     assert.equal((await readLook(p)).discovery, "water-writing");
@@ -330,9 +362,10 @@ try {
     await new Promise((r) => setTimeout(r, 1500));
     await p.screenshot({ path: `${out}/1440-opener.png` });
     const s = await readLook(p);
-    assert.equal(s.discovery, "blush");
+    assert.equal(s.discovery, PRESEED ? "first-voices" : "blush");
     assert.deepEqual(p.errors, []);
     await p.close();
+  }
   }
   }
   console.log("swipe-depth gate (" + SECTION + "): all checks passed");

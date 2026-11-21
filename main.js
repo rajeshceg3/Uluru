@@ -232,6 +232,7 @@ const leafMat = new THREE.MeshStandardMaterial({
   color: "#526049",
   roughness: 1,
 });
+let firstOak = [60, 6, 90];
 for (let i = 0; i < 17; i++) {
   const a = hash(i, 12) * 6.28,
     r = 100 + hash(i, 14) * 180,
@@ -255,6 +256,7 @@ for (let i = 0; i < 17; i++) {
     tree.add(foliage);
   }
   tree.position.set(x, ground(x, z) - 0.5, z);
+  if (i === 0) firstOak = [x, 6, z];
   scene.add(tree);
 }
 const starsG = new THREE.BufferGeometry(),
@@ -532,6 +534,10 @@ const DISCOVERIES = [
     title: "The blush",
     invite: "The face warms before the sun ever clears it.",
     body: "Uluru is arkose - a sandstone rich in feldspar, pressed from sediment shed by mountains that wore away about 550 million years ago. The red is only a skin: iron in the rock, rusted by air. Where the surface flakes, the stone underneath is its original grey.",
+    more: {
+      title: "Grey under the red",
+      body: "In shaded caves, and wherever a flake has fallen, the rock shows its first colour: a quiet grey. The famous red is a few millimetres of rust, forever renewed as the face slowly sheds its skin.",
+    },
     at: [2, 15, 12],
   },
   {
@@ -540,7 +546,23 @@ const DISCOVERIES = [
     title: "The green sea",
     invite: "The plain is not as empty as it looks.",
     body: "Spinifex covers this country in pale waves, and young desert oaks stand over it like dark feathers. Rare rain changes everything within days - the red ground flowers, and for a while the desert turns quietly green.",
+    more: {
+      title: "Slow trees",
+      body: "A desert oak spends its first decades as a narrow dark cone of needle-leaves before it broadens into shade. The plain measures time in lifetimes, not seasons.",
+    },
     at: [14, 0.5, 60],
+  },
+  {
+    chapter: 0,
+    id: "first-voices",
+    title: "First voices",
+    invite: "The day begins in sound.",
+    body: "At first light the plain wakes in chorus: zebra finches chitter in the desert oaks and fairy-wrens flick between the spinifex. The rock keeps its silence; the small birds do the talking.",
+    more: {
+      title: "Why dawn",
+      body: "Cool air carries sound, and the insects are moving. Dawn is feeding time, so the whole plain tunes up at once - an hour later the chorus is done.",
+    },
+    at: firstOak,
   },
   {
     chapter: 1,
@@ -548,6 +570,10 @@ const DISCOVERIES = [
     title: "Water writing",
     invite: "The face keeps its rain.",
     body: "Every groove in the rock is rain. Storm water sheets down the steep walls along these channels and gathers in waterholes around the base, and after heavy rain the rock briefly wears waterfalls.",
+    more: {
+      title: "After the storm",
+      body: "A few times a year, real rain arrives. Waterfalls run the channels, the waterholes fill, and frogs that waited it out underground come up to sing. Within weeks the plain flowers.",
+    },
     at: [-6, 13, 11],
   },
   {
@@ -556,6 +582,10 @@ const DISCOVERIES = [
     title: "The hidden rock",
     invite: "What you see is the smaller half.",
     body: "The rock rises 348 metres above the plain, and a slow walk around its base runs about 9.4 kilometres. Like an iceberg, most of the slab is out of sight - the same great block of arkose continues underground for kilometres more.",
+    more: {
+      title: "The slow walk",
+      body: "The base walk takes two to three hours if you go slowly, and slowly is the way. Every face is different: waves, caves, honeycomb weathering, sheer walls - one rock, many countries.",
+    },
     at: [1, 1, 13],
   },
   {
@@ -564,6 +594,10 @@ const DISCOVERIES = [
     title: "Many heads",
     invite: "The horizon has company.",
     body: "West along the horizon stand the 36 domes of Kata Tjuta - 'many heads' in Pitjantjatjara - the highest rising about 546 metres above the plain. Same deep story, different rock: cemented pebbles and boulders where Uluru is sand. For Aṉangu these domes carry men's business, and their stories are not shared publicly.",
+    more: {
+      title: "Waḻpa Gorge",
+      body: "One track enters between the domes: Waḻpa Gorge, a shaded creek line where wallabies shelter and wildflowers follow the rain. The wind moves through it like breath.",
+    },
     at: [-190, 8, -225],
   },
   {
@@ -572,7 +606,23 @@ const DISCOVERIES = [
     title: "The burning face",
     invite: "The rock saves its loudest colour for last.",
     body: "At the day's lowest angle, sunlight crosses more of the desert air and arrives redder, and the rusted skin answers. People who live with this view still argue over whether dawn or dusk burns brighter.",
+    more: {
+      title: "Why the red deepens",
+      body: "Low sunlight crosses hundreds of kilometres of dusty air. The blue scatters away; the red arrives. The rock's rusted skin does the rest.",
+    },
     at: [-28, 13, 4],
+  },
+  {
+    chapter: 2,
+    id: "shift-change",
+    title: "The shift change",
+    invite: "Dusk is when the desert wakes.",
+    body: "As the light goes, the plain changes hands: red kangaroos come out to graze, thorny devils work the last ant trails, and a perentie - a goanna longer than a person is tall - may still be holding the warm stone.",
+    more: {
+      title: "The mala fence",
+      body: "The mala, a small hare-wallaby, is gone from the wild mainland, taken by foxes and cats. Inside the park a predator-proof fence keeps a founding group safe, so the plain might one day hold them again.",
+    },
+    at: [30, 0.5, 80],
   },
   {
     chapter: 3,
@@ -580,7 +630,23 @@ const DISCOVERIES = [
     title: "The southern sky",
     invite: "The sky is the second half of the place.",
     body: "Nights here fall cold and very clear. The Southern Cross stands low over the dark with its two bright Pointers, and the Milky Way runs overhead like smoke - a sky people have read from this plain for tens of thousands of years.",
+    more: {
+      title: "Reading south",
+      body: "The Cross points roughly at the south celestial pole: run a line down its long axis, another between the Pointers, and where they meet is due south. Out here, no compass is needed.",
+    },
     at: [0, 420, -700],
+  },
+  {
+    chapter: 3,
+    id: "the-cold",
+    title: "The cold",
+    invite: "The clear sky takes the warmth with it.",
+    body: "The same open sky that gives you the stars lets the day's heat escape. Winter nights here can fall below freezing, and by first light the spinifex can carry frost.",
+    more: {
+      title: "Why so cold",
+      body: "No cloud, no water, no city: dry air holds no heat. The rock you watched glow at dusk is cold to the touch an hour later.",
+    },
+    at: [230, 155, -450],
   },
   {
     chapter: 3,
@@ -588,6 +654,10 @@ const DISCOVERIES = [
     title: "Aṉangu country",
     invite: "This country was never empty.",
     body: "This has always been Aṉangu land, read through Tjukurpa - the law and creation history held in the country itself. The park was handed back to its traditional owners in 1985 and is cared for together; the climb closed for good in 2019, out of respect. Some places here are asked not to be photographed. Looking gently is the way.",
+    more: {
+      title: "What Tjukurpa asks",
+      body: "Visitors are welcome on the walks and at the cultural centre. In return: stay on the marked ways, do not climb, and leave the sacred places unphotographed. The land is not a backdrop; it is family.",
+    },
     at: [0, 9, 12],
   },
   {
@@ -596,6 +666,10 @@ const DISCOVERIES = [
     title: "A field of light",
     invite: "After dark, the plain answers.",
     body: "Out on the real plain, an artwork blooms after dark: Field of Light, more than 50,000 slender solar stems first lit in 2016, glowing softly until they sleep. This plain remembers a touch.",
+    more: {
+      title: "Munro's field",
+      body: "Artist Bruce Munro planted the first stems in 2016: frosted glass on solar batteries, glowing in slow waves of colour until near dawn. It was meant to visit for a year; it stayed.",
+    },
     at: [0, 0.4, 42],
   },
 ];
@@ -611,6 +685,7 @@ let activeDiscovery = null,
   met = false,
   noteOpen = false,
   noteOpenedAt = 0,
+  openNoteFor = null,
   discoveryChapterNow = -1;
 const glowCanvas = document.createElement("canvas");
 glowCanvas.width = glowCanvas.height = 64;
@@ -663,8 +738,27 @@ function plantLight(x, z, calm) {
 const note = document.querySelector("#note"),
   noteTitle = document.querySelector("#note-title"),
   noteBody = document.querySelector("#note-body"),
+  noteDeeper = document.querySelector("#note-deeper"),
+  noteDeeperLabel = document.querySelector("#note-deeper-label"),
   journeyText = document.querySelector("#journey-text"),
   resetOrb = document.querySelector("#reset-orb");
+let noteDeep = false;
+noteDeeper.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (performance.now() - noteOpenedAt < 400) return;
+  const d = openNoteFor;
+  if (!d || !d.more) return;
+  noteDeep = !noteDeep;
+  noteBody.textContent = noteDeep ? d.more.body : d.body;
+  noteDeeperLabel.textContent = noteDeep ? d.title : d.more.title;
+  noteDeeper.setAttribute("aria-expanded", String(noteDeep));
+  noteDeeper.setAttribute(
+    "aria-label",
+    noteDeep ? `Back to ${d.title}` : `Go deeper: ${d.more.title}`,
+  );
+  canvas.dataset.noteLayer = noteDeep ? "deep" : "surface";
+  placeNote(); // the layer changes the note's height; re-place honestly
+});
 const allFound = () => found.size >= DISCOVERIES.length;
 function chapterDone(j) {
   return DISCOVERIES.filter((d) => d.chapter === j).every((d) =>
@@ -779,6 +873,8 @@ function openNote(d) {
   if (!d || noteOpen) return;
   noteOpen = true;
   noteOpenedAt = performance.now();
+  openNoteFor = d;
+  noteDeep = false;
   met = true;
   found.add(d.id);
   try {
@@ -787,6 +883,11 @@ function openNote(d) {
   marker.material.opacity = 0.35;
   noteTitle.textContent = d.title;
   noteBody.textContent = d.body;
+  noteDeeperLabel.textContent = d.more ? d.more.title : "";
+  noteDeeper.style.display = d.more ? "" : "none";
+  noteDeeper.setAttribute("aria-expanded", "false");
+  if (d.more) noteDeeper.setAttribute("aria-label", `Go deeper: ${d.more.title}`);
+  canvas.dataset.noteLayer = "surface";
   journeyText.style.visibility = "hidden";
   note.hidden = false;
   placeNote();
@@ -796,6 +897,8 @@ function openNote(d) {
 function closeNote() {
   if (!noteOpen) return;
   noteOpen = false;
+  openNoteFor = null;
+  noteDeep = false;
   note.hidden = true;
   leaderPath.setAttribute("d", "");
   journeyText.style.visibility = "";
