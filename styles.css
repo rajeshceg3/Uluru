@@ -187,6 +187,77 @@ button:focus-visible {
   margin-top: 10px;
   color: #f1e1d0;
 }
+/* one discovery note at a time, in the journey text's place */
+#note {
+  position: fixed;
+  z-index: 30;
+  left: 18px;
+  bottom: max(236px, calc(env(safe-area-inset-bottom) + 222px));
+  max-width: 460px;
+  width: calc(100% - 36px);
+  padding: 15px 18px;
+  background: rgba(25, 18, 20, 0.96);
+  border: 1px solid #d4b79b55;
+  border-radius: 8px;
+}
+#note[hidden] {
+  display: none;
+}
+#note-title {
+  font-size: clamp(25px, 3vw, 34px);
+  line-height: 1.12;
+  font-weight: 400;
+  padding-right: 44px;
+}
+#note-body {
+  font-family: system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  margin-top: 10px;
+  color: #f1e1d0;
+}
+#note-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 0;
+  color: #ecd3a6;
+}
+#note-close svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+/* a dial stop quietly fills once its moment has given up its discoveries */
+.stop.done i {
+  background: #f0952f;
+}
+.stop.done.active i {
+  background: #fff2c8;
+  box-shadow: 0 0 12px #f8c679;
+}
+@media (min-width: 760px) {
+  #note {
+    left: 32px;
+    bottom: 32px;
+    width: 440px;
+  }
+}
+@media (max-width: 350px) {
+  #note {
+    padding: 11px 14px;
+    left: 12px;
+    width: calc(100% - 24px);
+  }
+}
 #dial {
   position: fixed;
   z-index: 21;

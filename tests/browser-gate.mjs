@@ -50,7 +50,9 @@ try {
               .querySelector("#audio-orb")
               .getAttribute("aria-pressed"),
             chapter: +document.body.dataset.chapter,
-            targets: [...document.querySelectorAll("button")].map((b) => {
+            targets: [...document.querySelectorAll("button")]
+              .filter((b) => b.offsetParent !== null) // hidden panels hold no targets
+              .map((b) => {
               const r = b.getBoundingClientRect();
               return {
                 w: r.width,
