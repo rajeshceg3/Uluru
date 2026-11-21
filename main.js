@@ -610,6 +610,7 @@ let activeDiscovery = null,
   gazeT = 0,
   met = false,
   noteOpen = false,
+  noteOpenedAt = 0,
   discoveryChapterNow = -1;
 const glowCanvas = document.createElement("canvas");
 glowCanvas.width = glowCanvas.height = 64;
@@ -751,6 +752,10 @@ function placeNote() {
       overlap(rect, rock) * 3 +
       chromeRects.reduce((s, q) => s + overlap(rect, q), 0) * 8 +
       i * 0.5; // ties prefer above, then below
+    /* the note never covers its own glimmer (and never sits under the
+       finger that just tapped it - a touch's trailing click would close it) */
+    if (mx >= rect.l && mx <= rect.r && my >= rect.t && my <= rect.b)
+      score += 1e6;
     if (score < bestScore) {
       bestScore = score;
       best = c;
@@ -773,6 +778,7 @@ function placeNote() {
 function openNote(d) {
   if (!d || noteOpen) return;
   noteOpen = true;
+  noteOpenedAt = performance.now();
   met = true;
   found.add(d.id);
   try {
@@ -807,8 +813,12 @@ function closeNote() {
   );
   pickActive();
 }
-document.querySelector("#note-close").addEventListener("click", closeNote);
+document.querySelector("#note-close").addEventListener("click", () => {
+  if (performance.now() - noteOpenedAt < 400) return; // the opening tap's trailing click
+  closeNote();
+});
 note.addEventListener("click", (e) => {
+  if (performance.now() - noteOpenedAt < 400) return;
   if (e.target === note) closeNote();
 });
 addEventListener("keydown", (e) => {
