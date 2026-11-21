@@ -739,6 +739,7 @@ resetOrb.addEventListener("click", () => {
   });
   refreshDial();
   pickActive();
+  canvas.dataset.found = String(found.size);
   detail.textContent = chapters[chapter].detail;
   resetOrb.querySelector("span").textContent = "Reset";
   resetOrb.setAttribute("aria-label", "Reset this view");
